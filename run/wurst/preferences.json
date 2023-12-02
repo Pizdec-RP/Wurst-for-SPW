@@ -1,0 +1,8 @@
+{
+  "PacketPrint": 16,
+  "Panic": 2,
+  "Fake lag": 2,
+  "Timer": 2,
+  "BlockESP": 2,
+  "ARFinder": 4
+}
