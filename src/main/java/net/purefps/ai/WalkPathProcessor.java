@@ -94,6 +94,16 @@ public class WalkPathProcessor extends PathProcessor
 		if(pos.getX() != nextPos.getX() || pos.getZ() != nextPos.getZ())
 		{
 			MC.options.forwardKey.setPressed(true);
+			PathPos superNextPos = path.get(index+1);
+			int x1 = pos.getX()-nextPos.getX(), x2 = nextPos.getX() - superNextPos.getX();
+			int z1 = pos.getZ()-nextPos.getZ(), z2 = nextPos.getZ() - superNextPos.getZ();
+			int y1 = pos.getY()-nextPos.getY(), y2 = nextPos.getY() - superNextPos.getY();
+			if (x1 == x2 && z1 == z2) {
+				MC.options.sprintKey.setPressed(true);
+				if (y1 == 0 && y2 == 0) {
+					MC.options.jumpKey.setPressed(true);
+				}
+			}
 			
 			if(index > 0 && path.get(index - 1).isJumping()
 				|| pos.getY() < nextPos.getY())

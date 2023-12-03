@@ -17,7 +17,6 @@ import net.purefps.other_features.*;
 
 public final class OtfList
 {
-	public final ChangelogOtf changelogOtf = new ChangelogOtf();
 	public final CleanUpOtf cleanUpOtf = new CleanUpOtf();
 	public final DisableOtf disableOtf = new DisableOtf();
 	public final HackListOtf hackListOtf = new HackListOtf();

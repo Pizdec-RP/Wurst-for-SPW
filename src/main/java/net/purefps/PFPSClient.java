@@ -47,7 +47,6 @@ import net.purefps.other_feature.OtfList;
 import net.purefps.other_feature.OtherFeature;
 import net.purefps.settings.SettingsFile;
 import net.purefps.update.ProblematicResourcePackDetector;
-import net.purefps.update.WurstUpdater;
 import net.purefps.util.json.JsonException;
 
 public enum PFPSClient
@@ -78,7 +77,6 @@ public enum PFPSClient
 	
 	private boolean enabled = true;
 	private static boolean guiInitialized;
-	private WurstUpdater updater;
 	private ProblematicResourcePackDetector problematicPackDetector;
 	private Path wurstFolder;
 	
@@ -139,8 +137,6 @@ public enum PFPSClient
 		eventManager.add(PreMotionListener.class, rotationFaker);
 		eventManager.add(PostMotionListener.class, rotationFaker);
 		
-		updater = new WurstUpdater();
-		eventManager.add(UpdateListener.class, updater);
 		
 		problematicPackDetector = new ProblematicResourcePackDetector();
 		problematicPackDetector.start();
@@ -316,11 +312,6 @@ public enum PFPSClient
 			hax.panicHack.setEnabled(true);
 			hax.panicHack.onUpdate();
 		}
-	}
-	
-	public WurstUpdater getUpdater()
-	{
-		return updater;
 	}
 	
 	public ProblematicResourcePackDetector getProblematicPackDetector()
