@@ -1,13 +1,14 @@
-// 
+//
 // Decompiled by Procyon v0.6.0
-// 
+//
 
 package net.purefps.modules;
 
-import net.purefps.util.ChatUtils;
 import net.purefps.Category;
+import net.purefps.Feature;
 import net.purefps.events.UpdateListener;
 import net.purefps.module.Hack;
+import net.purefps.util.ChatUtils;
 
 public class ChatPosHack extends Hack implements UpdateListener
 {
@@ -15,17 +16,19 @@ public class ChatPosHack extends Hack implements UpdateListener
         super("ChatPosHack");
         this.setCategory(Category.OTHER);
     }
-    
-    public void onEnable() {
-        ChatPosHack.EVENTS.add(UpdateListener.class, this);
+
+    @Override
+	public void onEnable() {
+        Feature.EVENTS.add(UpdateListener.class, this);
     }
-    
-    public void onDisable() {
-        ChatPosHack.EVENTS.remove(UpdateListener.class, this);
+
+    @Override
+	public void onDisable() {
+        Feature.EVENTS.remove(UpdateListener.class, this);
     }
-    
+
     @Override
     public void onUpdate() {
-        ChatUtils.message(ChatPosHack.MC.player.getPos().toString());
+        ChatUtils.message(Feature.MC.player.getPos().toString());
     }
 }

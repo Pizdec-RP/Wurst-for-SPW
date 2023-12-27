@@ -15,9 +15,13 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientCommonNetworkHandler;
+import net.minecraft.client.network.ClientConnectionState;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.toast.SystemToast;
+import net.minecraft.network.ClientConnection;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.listener.TickablePacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkData;
@@ -32,22 +36,14 @@ import net.purefps.util.ChatUtils;
 
 @Mixin(ClientPlayNetworkHandler.class)
 public abstract class ClientPlayNetworkHandlerMixin
-	implements ClientPlayPacketListener
+	extends ClientCommonNetworkHandler
+	implements TickablePacketListener, ClientPlayPacketListener
 {
-	@Shadow
-	@Final
-	private MinecraftClient client;
-	
-	@Inject(at = @At("HEAD"),
-		method = "sendPacket(Lnet/minecraft/network/packet/Packet;)V",
-		cancellable = true)
-	private void onSendPacket(Packet<?> packet, CallbackInfo ci)
+	private ClientPlayNetworkHandlerMixin(PFPSClient wurst,
+		MinecraftClient client, ClientConnection connection,
+		ClientConnectionState connectionState)
 	{
-		PacketOutputEvent event = new PacketOutputEvent(packet);
-		EventManager.fire(event);
-		
-		if(event.isCancelled())
-			ci.cancel();
+		super(client, connection, connectionState);
 	}
 	
 	@Inject(at = @At("TAIL"),

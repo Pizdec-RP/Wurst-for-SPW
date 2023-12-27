@@ -12,12 +12,12 @@ import com.google.gson.JsonObject;
 public abstract class Alt
 {
 	private boolean favorite;
-	
+
 	public Alt(boolean favorite)
 	{
 		this.favorite = favorite;
 	}
-	
+
 	/**
 	 * Logs the user in with this Alt and updates the Alt's name, but doesn't
 	 * save the changes. <b>You should probably call
@@ -29,35 +29,35 @@ public abstract class Alt
 	 *             displayed to the user.
 	 */
 	public abstract void login() throws LoginException;
-	
+
 	/**
 	 * Adds this Alt to the given {@link JsonObject}. Used for saving and
 	 * exporting the alt list.
 	 */
 	public abstract void exportAsJson(JsonObject json);
-	
+
 	/**
 	 * @return The alt's login details in text format. Used for exporting the
 	 *         alt list. Cannot be null or empty.
 	 */
 	public abstract String exportAsTXT();
-	
+
 	/**
 	 * @return the Alt's name, or an empty String if unknown. Cannot be null.
 	 */
 	public abstract String getName();
-	
+
 	/**
 	 * @return the Alt's name, or email if the name is unknown. Cannot be null
 	 *         or empty.
 	 */
 	public abstract String getDisplayName();
-	
+
 	public final boolean isCracked()
 	{
 		return this instanceof CrackedAlt;
 	}
-	
+
 	/**
 	 * @return true if the Alt is premium (a real paid Minecraft account) and
 	 *         checked (has logged in successfully at some point).
@@ -66,7 +66,7 @@ public abstract class Alt
 	{
 		return !isCracked() && !getName().isEmpty();
 	}
-	
+
 	/**
 	 * @return true if the Alt is premium (a real paid Minecraft account) and
 	 *         unchecked (has never logged in successfully).
@@ -75,12 +75,12 @@ public abstract class Alt
 	{
 		return !isCracked() && getName().isEmpty();
 	}
-	
+
 	public final boolean isFavorite()
 	{
 		return favorite;
 	}
-	
+
 	/**
 	 * Changes whether or not the Alt is marked as a favorite, but doesn't save
 	 * the changes. <b>You should probably call
@@ -90,7 +90,7 @@ public abstract class Alt
 	{
 		this.favorite = favorite;
 	}
-	
+
 	/**
 	 * @apiNote This method intentionally does not include the Alt's password,
 	 *          to prevent accidental leaks if an Alt ever gets written directly

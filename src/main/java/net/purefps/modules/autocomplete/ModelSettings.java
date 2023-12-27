@@ -16,8 +16,8 @@ import net.purefps.settings.CheckboxSetting;
 import net.purefps.settings.EnumSetting;
 import net.purefps.settings.Setting;
 import net.purefps.settings.SliderSetting;
-import net.purefps.settings.TextFieldSetting;
 import net.purefps.settings.SliderSetting.ValueDisplay;
+import net.purefps.settings.TextFieldSetting;
 
 public final class ModelSettings
 {
@@ -34,7 +34,7 @@ public final class ModelSettings
 			+ " has chosen you to be a beta tester. It can be anywhere from"
 			+ " 15x to 60x more expensive than ChatGPT.",
 		OpenAiModel.values(), OpenAiModel.GPT_3_5_TURBO);
-	
+
 	public enum OpenAiModel
 	{
 		GPT_3_5_TURBO("gpt-3.5-turbo", true),
@@ -59,48 +59,48 @@ public final class ModelSettings
 		BABBAGE("babbage", false),
 		TEXT_ADA_001("text-ada-001", false),
 		ADA("ada", false);
-		
+
 		private final String name;
 		private final boolean chat;
-		
+
 		private OpenAiModel(String name, boolean chat)
 		{
 			this.name = name;
 			this.chat = chat;
 		}
-		
+
 		@Override
 		public String toString()
 		{
 			return name;
 		}
-		
+
 		public boolean isChatModel()
 		{
 			return chat;
 		}
 	}
-	
+
 	public final SliderSetting maxTokens = new SliderSetting("Max tokens",
 		"The maximum number of tokens that the model can generate.\n\n"
 			+ "Higher values allow the model to predict longer chat messages,"
 			+ " but also increase the time it takes to generate predictions.\n\n"
 			+ "The default value of 16 is fine for most use cases.",
 		16, 1, 100, 1, ValueDisplay.INTEGER);
-	
+
 	public final SliderSetting temperature = new SliderSetting("Temperature",
 		"Controls the model's creativity and randomness. A higher value will"
 			+ " result in more creative and sometimes nonsensical completions,"
 			+ " while a lower value will result in more boring completions.",
 		0.7, 0, 2, 0.01, ValueDisplay.DECIMAL);
-	
+
 	public final SliderSetting topP = new SliderSetting("Top P",
 		"An alternative to temperature. Makes the model less random by only"
 			+ " letting it choose from the most likely tokens.\n\n"
 			+ "A value of 100% disables this feature by letting the model"
 			+ " choose from all tokens.",
 		1, 0, 1, 0.01, ValueDisplay.PERCENTAGE);
-	
+
 	public final SliderSetting presencePenalty =
 		new SliderSetting("Presence penalty",
 			"Penalty for choosing tokens that already appear in the chat"
@@ -110,7 +110,7 @@ public final class ModelSettings
 				+ " model to repeat the same word over and over again.\n\n"
 				+ "Only works with OpenAI models.",
 			0, -2, 2, 0.01, ValueDisplay.DECIMAL);
-	
+
 	public final SliderSetting frequencyPenalty =
 		new SliderSetting("Frequency penalty",
 			"Similar to presence penalty, but based on how often the token"
@@ -120,7 +120,7 @@ public final class ModelSettings
 				+ " model to repeat existing chat messages.\n\n"
 				+ "Only works with OpenAI models.",
 			0.6, -2, 2, 0.01, ValueDisplay.DECIMAL);
-	
+
 	public final SliderSetting repetitionPenalty =
 		new SliderSetting("Repetition penalty",
 			"Similar to presence penalty, but uses a different algorithm.\n\n"
@@ -128,7 +128,7 @@ public final class ModelSettings
 				+ " 1.5 is the maximum value.\n\n"
 				+ "Only works with the oobabooga web UI.",
 			1, 1, 1.5, 0.01, ValueDisplay.DECIMAL);
-	
+
 	public final SliderSetting encoderRepetitionPenalty =
 		new SliderSetting("Encoder repetition penalty",
 			"Similar to frequency penalty, but uses a different algorithm.\n\n"
@@ -136,7 +136,7 @@ public final class ModelSettings
 				+ " 1.5 is the maximum value.\n\n"
 				+ "Only works with the oobabooga web UI.",
 			1, 0.8, 1.5, 0.01, ValueDisplay.DECIMAL);
-	
+
 	public final EnumSetting<StopSequence> stopSequence = new EnumSetting<>(
 		"Stop sequence",
 		"Controls how AutoComplete detects the end of a chat message.\n\n"
@@ -146,33 +146,33 @@ public final class ModelSettings
 			+ " code-optimized language models, which have a tendency to insert"
 			+ " line breaks in the middle of a chat message.",
 		StopSequence.values(), StopSequence.LINE_BREAK);
-	
+
 	public enum StopSequence
 	{
 		LINE_BREAK("Line Break", "\n"),
 		NEXT_MESSAGE("Next Message", "\n<");
-		
+
 		private final String name;
 		private final String sequence;
-		
+
 		private StopSequence(String name, String sequence)
 		{
 			this.name = name;
 			this.sequence = sequence;
 		}
-		
+
 		public String getSequence()
 		{
 			return sequence;
 		}
-		
+
 		@Override
 		public String toString()
 		{
 			return name;
 		}
 	}
-	
+
 	public final SliderSetting contextLength = new SliderSetting(
 		"Context length",
 		"Controls how many messages from the chat history are used to generate"
@@ -181,7 +181,7 @@ public final class ModelSettings
 			+ " increase the time it takes to generate them, as well as cost"
 			+ " (for OpenAI API users) or RAM usage (for oobabooga users).",
 		10, 0, 100, 1, ValueDisplay.INTEGER);
-	
+
 	public final CheckboxSetting filterServerMessages =
 		new CheckboxSetting("Filter server messages",
 			"Only shows player-made chat messages to the model.\n\n"
@@ -190,30 +190,30 @@ public final class ModelSettings
 				+ " no idea about events like players joining, leaving, dying,"
 				+ " etc.",
 			false);
-	
+
 	public final TextFieldSetting openaiChatEndpoint = new TextFieldSetting(
 		"OpenAI chat endpoint", "Endpoint for OpenAI's chat completion API.",
 		"https://api.openai.com/v1/chat/completions");
-	
+
 	public final TextFieldSetting openaiLegacyEndpoint =
 		new TextFieldSetting("OpenAI legacy endpoint",
 			"Endpoint for OpenAI's legacy completion API.",
 			"https://api.openai.com/v1/completions");
-	
+
 	public final TextFieldSetting oobaboogaEndpoint =
 		new TextFieldSetting("Oobabooga endpoint",
 			"Endpoint for your Oobabooga web UI instance.\n"
 				+ "Remember to start the Oobabooga server with the"
 				+ " \u00a7e--extensions api\u00a7r flag.",
 			"http://127.0.0.1:5000/api/v1/generate");
-	
+
 	private final List<Setting> settings =
 		Collections.unmodifiableList(Arrays.asList(openAiModel, maxTokens,
 			temperature, topP, presencePenalty, frequencyPenalty,
 			repetitionPenalty, encoderRepetitionPenalty, stopSequence,
 			contextLength, filterServerMessages, openaiChatEndpoint,
 			openaiLegacyEndpoint, oobaboogaEndpoint));
-	
+
 	public void forEach(Consumer<Setting> action)
 	{
 		settings.forEach(action);

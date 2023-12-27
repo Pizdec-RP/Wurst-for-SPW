@@ -18,7 +18,7 @@ public final class XrayCmd extends Command
 			".xray add <block>", ".xray remove <block>", ".xray list [<page>]",
 			".xray reset", "Example: .xray add gravel");
 	}
-	
+
 	@Override
 	public void call(String[] args) throws CmdException
 	{

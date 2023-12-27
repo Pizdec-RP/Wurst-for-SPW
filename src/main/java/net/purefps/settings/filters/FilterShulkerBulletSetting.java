@@ -16,13 +16,13 @@ public final class FilterShulkerBulletSetting extends EntityFilterCheckbox
 	{
 		super("Filter shulker bullets", description, checked);
 	}
-	
+
 	@Override
 	public boolean test(Entity e)
 	{
 		return !(e instanceof ShulkerBulletEntity);
 	}
-	
+
 	public static FilterShulkerBulletSetting genericCombat(boolean checked)
 	{
 		return new FilterShulkerBulletSetting("Won't attack shulker bullets.",

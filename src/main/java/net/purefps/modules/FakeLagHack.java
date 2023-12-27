@@ -1,22 +1,23 @@
-// 
+//
 // Decompiled by Procyon v0.6.0
-// 
+//
 
 package net.purefps.modules;
 
 import java.util.Iterator;
-import net.purefps.settings.Setting;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import net.minecraft.network.packet.Packet;
 import net.purefps.Category;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.Random;
-import java.util.List;
-import net.purefps.settings.SliderSetting;
+import net.purefps.Feature;
 import net.purefps.SearchTags;
-import net.purefps.module.DontSaveState;
 import net.purefps.events.PacketOutputListener;
 import net.purefps.events.UpdateListener;
+import net.purefps.module.DontSaveState;
 import net.purefps.module.Hack;
+import net.purefps.settings.SliderSetting;
 
 @DontSaveState
 @SearchTags({ "fake lag" })
@@ -29,42 +30,44 @@ public final class FakeLagHack extends Hack implements UpdateListener, PacketOut
     private final List<Packet<?>> resended;
     private int curtimeout;
     private static Random random;
-    
+
     public FakeLagHack() {
         super("Fake lag");
         this.min = new SliderSetting("min limit ms", "", 0.0, 0.0, 40.0, 1.0, SliderSetting.ValueDisplay.INTEGER.withLabel(0.0, "min"));
         this.max = new SliderSetting("max limit ms", "", 0.0, 0.0, 40.0, 1.0, SliderSetting.ValueDisplay.INTEGER.withLabel(0.0, "min"));
         this.pakcap = new SliderSetting("max lagged packet capacity", "", 20.0, 0.0, 100.0, 1.0, SliderSetting.ValueDisplay.INTEGER.withLabel(0.0, "nigga why?"));
-        this.packets = new CopyOnWriteArrayList<Packet<?>>();
-        this.resended = new CopyOnWriteArrayList<Packet<?>>();
+        this.packets = new CopyOnWriteArrayList<>();
+        this.resended = new CopyOnWriteArrayList<>();
         this.curtimeout = 0;
         this.setCategory(Category.MOVEMENT);
         this.addSetting(this.min);
         this.addSetting(this.max);
         this.addSetting(this.pakcap);
     }
-    
+
     @Override
     public String getRenderName() {
         return "Fakelag(" + this.curtimeout + ") capt(" + this.packets.size() + ") rs(" + this.resended.size();
     }
-    
-    public void onEnable() {
-        FakeLagHack.EVENTS.add(UpdateListener.class, this);
-        FakeLagHack.EVENTS.add(PacketOutputListener.class, this);
+
+    @Override
+	public void onEnable() {
+        Feature.EVENTS.add(UpdateListener.class, this);
+        Feature.EVENTS.add(PacketOutputListener.class, this);
     }
-    
+
     public static int rndi(final int min, final int max) {
         return FakeLagHack.random.nextInt(max - min + 1) + min;
     }
-    
-    public void onDisable() {
-        FakeLagHack.EVENTS.remove(UpdateListener.class, this);
-        FakeLagHack.EVENTS.remove(PacketOutputListener.class, this);
+
+    @Override
+	public void onDisable() {
+        Feature.EVENTS.remove(UpdateListener.class, this);
+        Feature.EVENTS.remove(PacketOutputListener.class, this);
         packets.forEach(p -> MC.player.networkHandler.sendPacket(p));
         this.packets.clear();
     }
-    
+
     @Override
     public void onUpdate() {
         final int curtimeout = this.curtimeout - 1;
@@ -84,7 +87,7 @@ public final class FakeLagHack extends Hack implements UpdateListener, PacketOut
             this.curtimeout = rndi(this.min.getValueI(), this.max.getValueI());
         }
     }
-    
+
     @Override
     public void onSentPacket(final PacketOutputEvent event) {
         final Packet<?> packet = event.getPacket();
@@ -97,7 +100,7 @@ public final class FakeLagHack extends Hack implements UpdateListener, PacketOut
         event.cancel();
         this.packets.add(packet);
     }
-    
+
     static {
         FakeLagHack.random = new Random(1488L);
     }

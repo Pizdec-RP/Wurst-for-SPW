@@ -15,7 +15,7 @@ import net.purefps.util.ChatUtils;
 public class ShallowWaterWarningCheckbox extends CheckboxSetting
 {
 	private boolean hasAlreadyWarned;
-	
+
 	public ShallowWaterWarningCheckbox()
 	{
 		super("Shallow water warning",
@@ -23,12 +23,12 @@ public class ShallowWaterWarningCheckbox extends CheckboxSetting
 				+ " water.",
 			true);
 	}
-	
+
 	public void reset()
 	{
 		hasAlreadyWarned = false;
 	}
-	
+
 	public void checkWaterAround(FishingBobberEntity bobber)
 	{
 		if(bobber.isOpenOrWaterAround(bobber.getBlockPos()))
@@ -36,16 +36,16 @@ public class ShallowWaterWarningCheckbox extends CheckboxSetting
 			hasAlreadyWarned = false;
 			return;
 		}
-		
+
 		if(isChecked() && !hasAlreadyWarned)
 		{
 			ChatUtils.warning("You are currently fishing in shallow water.");
 			ChatUtils.message(
 				"You can't get any treasure items while fishing like this.");
-			
+
 			if(!PFPSClient.INSTANCE.getHax().openWaterEspHack.isEnabled())
 				ChatUtils.message("Use OpenWaterESP to find open water.");
-			
+
 			hasAlreadyWarned = true;
 		}
 	}

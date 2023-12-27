@@ -23,36 +23,36 @@ public record BookOffer(String id, int level, int price)
 		Identifier id = Registries.ENCHANTMENT.getId(enchantment);
 		return new BookOffer("" + id, enchantment.getMaxLevel(), 64);
 	}
-	
+
 	public Enchantment getEnchantment()
 	{
 		return Registries.ENCHANTMENT.get(new Identifier(id));
 	}
-	
+
 	public String getEnchantmentName()
 	{
 		TranslationStorage english = ILanguageManager.getEnglish();
 		Enchantment enchantment = getEnchantment();
 		return english.get(enchantment.getTranslationKey());
 	}
-	
+
 	public String getEnchantmentNameWithLevel()
 	{
 		TranslationStorage english = ILanguageManager.getEnglish();
 		Enchantment enchantment = getEnchantment();
 		String name = english.get(enchantment.getTranslationKey());
-		
+
 		if(enchantment.getMaxLevel() > 1)
 			name += " " + english.get("enchantment.level." + level);
-		
+
 		return name;
 	}
-	
+
 	public String getFormattedPrice()
 	{
 		return price + " emerald" + (price == 1 ? "" : "s");
 	}
-	
+
 	public boolean isValid()
 	{
 		Enchantment enchantment = getEnchantment();
@@ -60,30 +60,30 @@ public record BookOffer(String id, int level, int price)
 			&& enchantment.isAvailableForEnchantedBookOffer() && level >= 1
 			&& level <= enchantment.getMaxLevel() && price >= 1 && price <= 64;
 	}
-	
+
 	@Override
 	public int compareTo(BookOffer other)
 	{
 		int idCompare = id.compareTo(other.id);
 		if(idCompare != 0)
 			return idCompare;
-		
+
 		return Integer.compare(level, other.level);
 	}
-	
+
 	@Override
 	public boolean equals(Object obj)
 	{
 		if(this == obj)
 			return true;
-		
+
 		if(obj == null || getClass() != obj.getClass())
 			return false;
-		
+
 		BookOffer other = (BookOffer)obj;
 		return id.equals(other.id) && level == other.level;
 	}
-	
+
 	@Override
 	public int hashCode()
 	{

@@ -31,7 +31,7 @@ public abstract class ChatInputSuggestorMixin
 	private TextFieldWidget textField;
 	@Shadow
 	private CompletableFuture<Suggestions> pendingSuggestions;
-	
+
 	@Inject(at = @At("TAIL"), method = "refresh()V")
 	private void onRefresh(CallbackInfo ci)
 	{
@@ -39,7 +39,7 @@ public abstract class ChatInputSuggestorMixin
 			PFPSClient.INSTANCE.getHax().autoCompleteHack;
 		if(!autoComplete.isEnabled())
 			return;
-		
+
 		String draftMessage =
 			textField.getText().substring(0, textField.getCursor());
 		autoComplete.onRefresh(draftMessage, (builder, suggestion) -> {
@@ -48,7 +48,7 @@ public abstract class ChatInputSuggestorMixin
 			show(false);
 		});
 	}
-	
+
 	@Shadow
 	public abstract void show(boolean narrateFirstSuggestion);
 }

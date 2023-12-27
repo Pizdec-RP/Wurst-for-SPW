@@ -44,26 +44,26 @@ public final class ItemEspHack extends Hack implements UpdateListener,
 	CameraTransformViewBobbingListener, RenderListener
 {
 	private final EspStyleSetting style = new EspStyleSetting();
-	
+
 	private final EspBoxSizeSetting boxSize = new EspBoxSizeSetting(
 		"\u00a7lAccurate\u00a7r mode shows the exact hitbox of each item.\n"
 			+ "\u00a7lFancy\u00a7r mode shows larger boxes that look better.");
-	
+
 	private final ColorSetting color = new ColorSetting("Color",
 		"Items will be highlighted in this color.", Color.YELLOW);
-	
+
 	private final ArrayList<ItemEntity> items = new ArrayList<>();
-	
+
 	public ItemEspHack()
 	{
 		super("ItemESP");
 		setCategory(Category.RENDER);
-		
+
 		addSetting(style);
 		addSetting(boxSize);
 		addSetting(color);
 	}
-	
+
 	@Override
 	public void onEnable()
 	{
@@ -71,7 +71,7 @@ public final class ItemEspHack extends Hack implements UpdateListener,
 		EVENTS.add(CameraTransformViewBobbingListener.class, this);
 		EVENTS.add(RenderListener.class, this);
 	}
-	
+
 	@Override
 	public void onDisable()
 	{
@@ -79,7 +79,7 @@ public final class ItemEspHack extends Hack implements UpdateListener,
 		EVENTS.remove(CameraTransformViewBobbingListener.class, this);
 		EVENTS.remove(RenderListener.class, this);
 	}
-	
+
 	@Override
 	public void onUpdate()
 	{
@@ -88,7 +88,7 @@ public final class ItemEspHack extends Hack implements UpdateListener,
 			if(entity instanceof ItemEntity)
 				items.add((ItemEntity)entity);
 	}
-	
+
 	@Override
 	public void onCameraTransformViewBobbing(
 		CameraTransformViewBobbingEvent event)
@@ -96,50 +96,50 @@ public final class ItemEspHack extends Hack implements UpdateListener,
 		if(style.hasLines())
 			event.cancel();
 	}
-	
+
 	@Override
 	public void onRender(MatrixStack matrixStack, float partialTicks)
 	{
 		// GL settings
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		
+
 		matrixStack.push();
-		
+
 		RegionPos region = RenderUtils.getCameraRegion();
 		RenderUtils.applyRegionalRenderOffset(matrixStack, region);
-		
+
 		renderBoxes(matrixStack, partialTicks, region);
-		
+
 		if(style.hasLines())
 			renderTracers(matrixStack, partialTicks, region);
-		
+
 		matrixStack.pop();
-		
+
 		// GL resets
 		RenderSystem.setShaderColor(1, 1, 1, 1);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glDisable(GL11.GL_BLEND);
 	}
-	
+
 	private void renderBoxes(MatrixStack matrixStack, float partialTicks,
 		RegionPos region)
 	{
 		float extraSize = boxSize.getExtraSize();
-		
+
 		for(ItemEntity e : items)
 		{
 			matrixStack.push();
-			
+
 			Vec3d lerpedPos = EntityUtils.getLerpedPos(e, partialTicks)
 				.subtract(region.toVec3d());
 			matrixStack.translate(lerpedPos.x, lerpedPos.y, lerpedPos.z);
-			
+
 			if(style.hasBoxes())
 			{
 				matrixStack.push();
 				matrixStack.scale(e.getWidth() + extraSize,
 					e.getHeight() + extraSize, e.getWidth() + extraSize);
-				
+
 				GL11.glEnable(GL11.GL_BLEND);
 				GL11.glDisable(GL11.GL_DEPTH_TEST);
 				float[] colorF = color.getColorF();
@@ -147,14 +147,14 @@ public final class ItemEspHack extends Hack implements UpdateListener,
 					0.5F);
 				RenderUtils.drawOutlinedBox(new Box(-0.5, 0, -0.5, 0.5, 1, 0.5),
 					matrixStack);
-				
+
 				matrixStack.pop();
 			}
-			
+
 			matrixStack.pop();
 		}
 	}
-	
+
 	private void renderTracers(MatrixStack matrixStack, float partialTicks,
 		RegionPos region)
 	{
@@ -162,23 +162,23 @@ public final class ItemEspHack extends Hack implements UpdateListener,
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		float[] colorF = color.getColorF();
 		RenderSystem.setShaderColor(colorF[0], colorF[1], colorF[2], 0.5F);
-		
+
 		Matrix4f matrix = matrixStack.peek().getPositionMatrix();
 		Tessellator tessellator = RenderSystem.renderThreadTesselator();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		RenderSystem.setShader(GameRenderer::getPositionProgram);
-		
+
 		Vec3d regionVec = region.toVec3d();
 		Vec3d start = RotationUtils.getClientLookVec(partialTicks)
 			.add(RenderUtils.getCameraPos()).subtract(regionVec);
-		
+
 		bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINES,
 			VertexFormats.POSITION);
 		for(ItemEntity e : items)
 		{
 			Vec3d end = EntityUtils.getLerpedBox(e, partialTicks).getCenter()
 				.subtract(regionVec);
-			
+
 			bufferBuilder
 				.vertex(matrix, (float)start.x, (float)start.y, (float)start.z)
 				.next();

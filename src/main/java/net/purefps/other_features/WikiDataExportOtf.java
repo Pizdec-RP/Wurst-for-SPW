@@ -31,33 +31,33 @@ public final class WikiDataExportOtf extends OtherFeature
 				+ " different features and settings in this version of Wurst."
 				+ " Primarily used to update the Wurst Wiki.");
 	}
-	
+
 	@Override
 	public String getPrimaryAction()
 	{
 		return "Export Data";
 	}
-	
+
 	@Override
 	public void doPrimaryAction()
 	{
 		try
 		{
 			Path exportFile = WURST.getWurstFolder().resolve("wiki-data.json");
-			
+
 			JsonObject json = new JsonObject();
 			for(Hack hack : WURST.getHax().getAllHax())
 				json.add(hack.getName(), hackToJson(hack));
-			
+
 			JsonUtils.toJson(json, exportFile);
-			
+
 		}catch(Exception e)
 		{
 			ChatUtils.error("Failed to export data: " + e.getMessage());
 			e.printStackTrace();
 		}
 	}
-	
+
 	private JsonObject hackToJson(Hack hack)
 	{
 		JsonObject json = new JsonObject();
@@ -70,24 +70,24 @@ public final class WikiDataExportOtf extends OtherFeature
 		json.addProperty("keybind", getDefaultKeybind(hack));
 		json.addProperty("stateSaved", hack.isStateSaved());
 		json.addProperty("class", hack.getClass().getName());
-		
+
 		JsonArray settings = new JsonArray();
 		for(Setting setting : hack.getSettings().values())
 			settings.add(setting.exportWikiData());
 		json.add("settings", settings);
 		return json;
 	}
-	
+
 	private String getDefaultKeybind(Feature feature)
 	{
 		String name = feature.getName().toLowerCase().replace(" ", "_");
 		if(name.startsWith("."))
 			name = name.substring(1);
-		
+
 		for(Keybind keybind : KeybindList.DEFAULT_KEYBINDS)
 			if(keybind.getCommands().toLowerCase().contains(name))
 				return keybind.getKey();
-			
+
 		return null;
 	}
 }

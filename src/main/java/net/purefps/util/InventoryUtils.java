@@ -21,35 +21,35 @@ import net.purefps.mixinterface.IMinecraftClient;
 public enum InventoryUtils
 {
 	;
-	
+
 	private static final MinecraftClient MC = PFPSClient.MC;
 	private static final IMinecraftClient IMC = PFPSClient.IMC;
-	
+
 	public static int indexOf(Item item)
 	{
 		return indexOf(stack -> stack.isOf(item), 36, false);
 	}
-	
+
 	public static int indexOf(Item item, int maxInvSlot)
 	{
 		return indexOf(stack -> stack.isOf(item), maxInvSlot, false);
 	}
-	
+
 	public static int indexOf(Item item, int maxInvSlot, boolean includeOffhand)
 	{
 		return indexOf(stack -> stack.isOf(item), maxInvSlot, includeOffhand);
 	}
-	
+
 	public static int indexOf(Predicate<ItemStack> predicate)
 	{
 		return indexOf(predicate, 36, false);
 	}
-	
+
 	public static int indexOf(Predicate<ItemStack> predicate, int maxInvSlot)
 	{
 		return indexOf(predicate, maxInvSlot, false);
 	}
-	
+
 	/**
 	 * Searches the player's inventory from slot 0 to {@code maxInvSlot-1} for
 	 * the first item that matches the given predicate and returns its slot, or
@@ -69,47 +69,47 @@ public enum InventoryUtils
 		boolean includeOffhand)
 	{
 		PlayerInventory inventory = MC.player.getInventory();
-		
+
 		// create a stream of all slots that we want to search
 		IntStream stream = IntStream.range(0, maxInvSlot);
 		if(includeOffhand)
 			stream = IntStream.concat(stream, IntStream.of(40));
-		
+
 		// find the slot of the item we want
 		int slot = stream.filter(i -> predicate.test(inventory.getStack(i)))
 			.findFirst().orElse(-1);
-		
+
 		return slot;
 	}
-	
+
 	public static boolean selectItem(Item item)
 	{
 		return selectItem(stack -> stack.isOf(item), 36, false);
 	}
-	
+
 	public static boolean selectItem(Item item, int maxInvSlot)
 	{
 		return selectItem(stack -> stack.isOf(item), maxInvSlot, false);
 	}
-	
+
 	public static boolean selectItem(Item item, int maxInvSlot,
 		boolean takeFromOffhand)
 	{
 		return selectItem(stack -> stack.isOf(item), maxInvSlot,
 			takeFromOffhand);
 	}
-	
+
 	public static boolean selectItem(Predicate<ItemStack> predicate)
 	{
 		return selectItem(predicate, 36, false);
 	}
-	
+
 	public static boolean selectItem(Predicate<ItemStack> predicate,
 		int maxInvSlot)
 	{
 		return selectItem(predicate, maxInvSlot, false);
 	}
-	
+
 	/**
 	 * Searches the player's inventory from slot 0 to {@code maxInvSlot-1} for
 	 * the first item that matches the given predicate and moves it to
@@ -137,7 +137,7 @@ public enum InventoryUtils
 	{
 		return selectItem(indexOf(predicate, maxInvSlot, takeFromOffhand));
 	}
-	
+
 	/**
 	 * Moves the item in the given slot to {@code inventory.selectedSlot}. If
 	 * the given slot is negative, this method will do nothing and return
@@ -153,11 +153,11 @@ public enum InventoryUtils
 	{
 		PlayerInventory inventory = MC.player.getInventory();
 		IClientPlayerInteractionManager im = IMC.getInteractionManager();
-		
+
 		// if the slot is negative, abort and return false
 		if(slot < 0)
 			return false;
-		
+
 		// if the item is already in the hotbar, just select it
 		if(slot < 9)
 			inventory.selectedSlot = slot;
@@ -168,24 +168,24 @@ public enum InventoryUtils
 		// otherwise, swap with the currently selected item
 		else
 			im.windowClick_SWAP(toNetworkSlot(slot), inventory.selectedSlot);
-		
+
 		return true;
 	}
-	
+
 	private static int toNetworkSlot(int slot)
 	{
 		// hotbar
 		if(slot >= 0 && slot < 9)
 			return slot + 36;
-		
+
 		// armor
 		if(slot >= 36 && slot < 40)
 			return 44 - slot;
-		
+
 		// offhand
 		if(slot == 40)
 			return 45;
-		
+
 		// everything else
 		return slot;
 	}

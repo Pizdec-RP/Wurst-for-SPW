@@ -19,7 +19,7 @@ public final class BindCmd extends Command
 			"Multiple hacks/commands must be separated by ';'.",
 			"Use .binds for more options.");
 	}
-	
+
 	@Override
 	public void call(String[] args) throws CmdException
 	{

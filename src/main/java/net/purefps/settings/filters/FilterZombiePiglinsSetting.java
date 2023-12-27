@@ -18,24 +18,24 @@ public final class FilterZombiePiglinsSetting
 	{
 		super("Filter zombie piglins", description, selected, checked);
 	}
-	
+
 	public FilterZombiePiglinsSetting(String description, Mode selected)
 	{
 		this(description, selected, false);
 	}
-	
+
 	@Override
 	public boolean onTest(Entity e)
 	{
 		return !(e instanceof ZombifiedPiglinEntity);
 	}
-	
+
 	@Override
 	public boolean ifCalmTest(Entity e)
 	{
 		return !(e instanceof ZombifiedPiglinEntity zpe) || zpe.isAttacking();
 	}
-	
+
 	public static FilterZombiePiglinsSetting genericCombat(Mode selected)
 	{
 		return new FilterZombiePiglinsSetting("When set to \u00a7lOn\u00a7r,"
@@ -47,7 +47,7 @@ public final class FilterZombiePiglinsSetting
 			+ "When set to \u00a7lOff\u00a7r, this filter does nothing and"
 			+ " zombified piglins can be attacked.", selected);
 	}
-	
+
 	public static FilterZombiePiglinsSetting genericVision(Mode selected)
 	{
 		return new FilterZombiePiglinsSetting("When set to \u00a7lOn\u00a7r,"
@@ -57,7 +57,7 @@ public final class FilterZombiePiglinsSetting
 			+ "When set to \u00a7lOff\u00a7r, this filter does nothing and"
 			+ " zombified piglins can be shown.", selected);
 	}
-	
+
 	public static FilterZombiePiglinsSetting onOffOnly(String description,
 		boolean onByDefault)
 	{

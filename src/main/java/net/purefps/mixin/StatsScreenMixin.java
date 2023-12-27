@@ -29,39 +29,39 @@ public abstract class StatsScreenMixin extends Screen implements StatsListener
 	{
 		super(title);
 	}
-	
+
 	@Inject(at = @At("TAIL"), method = "createButtons()V")
 	private void onCreateButtons(CallbackInfo ci)
 	{
 		if(PFPSClient.INSTANCE.getOtfs().disableOtf.shouldHideEnableButton())
 			return;
-		
+
 		ButtonWidget toggleWurstButton =
 			ButtonWidget.builder(Text.literal(""), this::toggleWurst)
 				.dimensions(width / 2 - 152, height - 28, 150, 20).build();
-		
+
 		updateWurstButtonText(toggleWurstButton);
 		addDrawableChild(toggleWurstButton);
-		
+
 		for(ClickableWidget button : Screens.getButtons(this))
 		{
 			if(!button.getMessage().getString()
 				.equals(I18n.translate("gui.done")))
 				continue;
-			
+
 			button.setX(width / 2 + 2);
 			button.setWidth(150);
 		}
 	}
-	
+
 	private void toggleWurst(ButtonWidget button)
 	{
 		PFPSClient wurst = PFPSClient.INSTANCE;
 		wurst.setEnabled(!wurst.isEnabled());
-		
+
 		updateWurstButtonText(button);
 	}
-	
+
 	private void updateWurstButtonText(ButtonWidget button)
 	{
 		PFPSClient wurst = PFPSClient.INSTANCE;

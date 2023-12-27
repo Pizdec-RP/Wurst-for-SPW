@@ -23,33 +23,33 @@ public abstract class ChestEspGroup
 	protected final ArrayList<Box> boxes = new ArrayList<>();
 	private final ColorSetting color;
 	private final CheckboxSetting enabled;
-	
+
 	public ChestEspGroup(ColorSetting color, CheckboxSetting enabled)
 	{
 		this.color = Objects.requireNonNull(color);
 		this.enabled = enabled;
 	}
-	
+
 	public void clear()
 	{
 		boxes.clear();
 	}
-	
+
 	public boolean isEnabled()
 	{
 		return enabled == null || enabled.isChecked();
 	}
-	
+
 	public Stream<Setting> getSettings()
 	{
 		return Stream.of(enabled, color).filter(Objects::nonNull);
 	}
-	
+
 	public float[] getColorF()
 	{
 		return color.getColorF();
 	}
-	
+
 	public List<Box> getBoxes()
 	{
 		return Collections.unmodifiableList(boxes);

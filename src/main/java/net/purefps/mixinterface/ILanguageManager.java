@@ -13,7 +13,7 @@ import net.purefps.PFPSClient;
 public interface ILanguageManager
 {
 	public TranslationStorage wurst_getEnglish();
-	
+
 	public static TranslationStorage getEnglish()
 	{
 		return ((ILanguageManager)PFPSClient.MC.getLanguageManager())

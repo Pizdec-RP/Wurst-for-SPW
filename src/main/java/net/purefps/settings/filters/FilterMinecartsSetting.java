@@ -16,7 +16,7 @@ public final class FilterMinecartsSetting extends EntityFilterCheckbox
 	{
 		super("Filter minecarts", description, checked);
 	}
-	
+
 	@Override
 	public boolean test(Entity e)
 	{

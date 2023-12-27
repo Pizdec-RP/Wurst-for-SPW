@@ -40,7 +40,7 @@ public class SodiumFluidRendererMixin
 		BlockState state = world.getBlockState(pos);
 		ShouldDrawSideEvent event = new ShouldDrawSideEvent(state, pos);
 		EventManager.fire(event);
-		
+
 		if(event.isRendered() != null)
 			cir.setReturnValue(event.isRendered());
 	}

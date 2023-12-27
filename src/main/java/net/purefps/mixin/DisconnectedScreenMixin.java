@@ -19,6 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import net.minecraft.client.gui.screen.DisconnectedScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
 import net.minecraft.client.gui.widget.GridWidget;
 import net.minecraft.text.Text;
 import net.purefps.PFPSClient;
@@ -41,7 +42,7 @@ public class DisconnectedScreenMixin extends Screen
 	private Screen parent;
 	@Shadow
 	@Final
-	private GridWidget grid;
+	private DirectionalLayoutWidget grid;
 	
 	private DisconnectedScreenMixin(PFPSClient wurst, Text title)
 	{
@@ -76,12 +77,12 @@ public class DisconnectedScreenMixin extends Screen
 		ButtonWidget reconnectButton = grid.add(
 			ButtonWidget.builder(Text.literal("Reconnect"),
 				b -> LastServerRememberer.reconnect(parent)).build(),
-			3, 0, 1, 1, grid.copyPositioner().margin(2).marginTop(-6));
+			grid.copyPositioner().margin(2).marginTop(-6));
 		
 		autoReconnectButton = grid.add(
 			ButtonWidget.builder(Text.literal("AutoReconnect"),
 				b -> pressAutoReconnect()).build(),
-			4, 0, 1, 1, grid.copyPositioner().margin(2));
+			grid.copyPositioner().margin(2));
 		
 		grid.refreshPositions();
 		Stream.of(reconnectButton, autoReconnectButton)
@@ -132,3 +133,4 @@ public class DisconnectedScreenMixin extends Screen
 		LastServerRememberer.reconnect(parent);
 	}
 }
+

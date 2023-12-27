@@ -30,7 +30,7 @@ public abstract class CactusBlockMixin extends Block
 	{
 		super(settings);
 	}
-	
+
 	@Inject(at = @At("HEAD"),
 		method = "getCollisionShape(Lnet/minecraft/block/BlockState;Lnet/minecraft/world/BlockView;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/ShapeContext;)Lnet/minecraft/util/shape/VoxelShape;",
 		cancellable = true)
@@ -40,7 +40,7 @@ public abstract class CactusBlockMixin extends Block
 	{
 		CactusCollisionShapeEvent event = new CactusCollisionShapeEvent();
 		EventManager.fire(event);
-		
+
 		VoxelShape collisionShape = event.getCollisionShape();
 		if(collisionShape != null)
 			cir.setReturnValue(collisionShape);

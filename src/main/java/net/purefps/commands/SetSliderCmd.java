@@ -29,29 +29,29 @@ public final class SetSliderCmd extends Command
 			".setslider <feature> <setting> <value>",
 			".setslider <feature> <setting> (more|less)");
 	}
-	
+
 	@Override
 	public void call(String[] args) throws CmdException
 	{
 		if(args.length != 3)
 			throw new CmdSyntaxError();
-		
+
 		Feature feature = CmdUtils.findFeature(args[0]);
 		Setting setting = CmdUtils.findSetting(feature, args[1]);
 		SliderSetting slider = getAsSlider(feature, setting);
 		setValue(args[2], slider);
 	}
-	
+
 	private SliderSetting getAsSlider(Feature feature, Setting setting)
 		throws CmdError
 	{
 		if(!(setting instanceof SliderSetting))
 			throw new CmdError(feature.getName() + " " + setting.getName()
 				+ " is not a slider setting.");
-		
+
 		return (SliderSetting)setting;
 	}
-	
+
 	private void setValue(String value, SliderSetting slider)
 		throws CmdSyntaxError
 	{
@@ -60,11 +60,11 @@ public final class SetSliderCmd extends Command
 			case "more":
 			slider.increaseValue();
 			break;
-			
+
 			case "less":
 			slider.decreaseValue();
 			break;
-			
+
 			default:
 			if(!MathUtils.isDouble(value))
 				throw new CmdSyntaxError("Value must be a number.");

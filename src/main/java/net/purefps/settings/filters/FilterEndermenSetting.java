@@ -17,24 +17,24 @@ public final class FilterEndermenSetting extends AttackDetectingEntityFilter
 	{
 		super("Filter endermen", description, selected, checked);
 	}
-	
+
 	public FilterEndermenSetting(String description, Mode selected)
 	{
 		this(description, selected, false);
 	}
-	
+
 	@Override
 	public boolean onTest(Entity e)
 	{
 		return !(e instanceof EndermanEntity);
 	}
-	
+
 	@Override
 	public boolean ifCalmTest(Entity e)
 	{
 		return !(e instanceof EndermanEntity ee) || ee.isAttacking();
 	}
-	
+
 	public static FilterEndermenSetting genericCombat(Mode selected)
 	{
 		return new FilterEndermenSetting("When set to \u00a7lOn\u00a7r,"
@@ -45,7 +45,7 @@ public final class FilterEndermenSetting extends AttackDetectingEntityFilter
 			+ "When set to \u00a7lOff\u00a7r, this filter does nothing and"
 			+ " endermen can be attacked.", selected);
 	}
-	
+
 	public static FilterEndermenSetting genericVision(Mode selected)
 	{
 		return new FilterEndermenSetting("When set to \u00a7lOn\u00a7r,"
@@ -55,7 +55,7 @@ public final class FilterEndermenSetting extends AttackDetectingEntityFilter
 			+ "When set to \u00a7lOff\u00a7r, this filter does nothing and"
 			+ " endermen can be shown.", selected);
 	}
-	
+
 	public static FilterEndermenSetting onOffOnly(String description,
 		boolean onByDefault)
 	{

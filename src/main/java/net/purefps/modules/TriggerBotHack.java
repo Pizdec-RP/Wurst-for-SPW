@@ -28,30 +28,30 @@ public final class TriggerBotHack extends Hack implements UpdateListener
 {
 	private final SliderSetting range =
 		new SliderSetting("Range", 4.25, 1, 6, 0.05, ValueDisplay.DECIMAL);
-	
+
 	private final AttackSpeedSliderSetting speed =
 		new AttackSpeedSliderSetting();
-	
+
 	private final CheckboxSetting attackWhileBlocking = new CheckboxSetting(
 		"Attack while blocking",
 		"Whether or not to attack while blocking with a shield / using items.",
 		false);
-	
+
 	private final EntityFilterList entityFilters =
 		EntityFilterList.genericCombat();
-	
+
 	public TriggerBotHack()
 	{
 		super("TriggerBot");
 		setCategory(Category.COMBAT);
-		
+
 		addSetting(range);
 		addSetting(speed);
 		addSetting(attackWhileBlocking);
-		
+
 		entityFilters.forEach(this::addSetting);
 	}
-	
+
 	@Override
 	public void onEnable()
 	{
@@ -64,56 +64,50 @@ public final class TriggerBotHack extends Hack implements UpdateListener
 		WURST.getHax().multiAuraHack.setEnabled(false);
 		WURST.getHax().protectHack.setEnabled(false);
 		WURST.getHax().tpAuraHack.setEnabled(false);
-		
+
 		speed.resetTimer();
 		EVENTS.add(UpdateListener.class, this);
 	}
-	
+
 	@Override
 	public void onDisable()
 	{
 		EVENTS.remove(UpdateListener.class, this);
 	}
-	
+
 	@Override
 	public void onUpdate()
 	{
 		speed.updateTimer();
-		if(!speed.isTimeToAttack())
-			return;
-		
 		// don't attack when a container/inventory screen is open
-		if(MC.currentScreen instanceof HandledScreen)
+		if(!speed.isTimeToAttack() || (MC.currentScreen instanceof HandledScreen))
 			return;
-		
+
 		ClientPlayerEntity player = MC.player;
 		if(player.isUsingItem() && !attackWhileBlocking.isChecked())
 			return;
-		
+
 		if(MC.crosshairTarget == null
 			|| !(MC.crosshairTarget instanceof EntityHitResult))
 			return;
-		
+
 		Entity target = ((EntityHitResult)MC.crosshairTarget).getEntity();
 		if(!isCorrectEntity(target))
 			return;
-		
+
 		WURST.getHax().autoSwordHack.setSlot();
-		
+
 		WURST.getHax().criticalsHack.doCritical();
 		MC.interactionManager.attackEntity(player, target);
 		player.swingHand(Hand.MAIN_HAND);
 		speed.resetTimer();
 	}
-	
+
 	private boolean isCorrectEntity(Entity entity)
 	{
-		if(!EntityUtils.IS_ATTACKABLE.test(entity))
+		if(!EntityUtils.IS_ATTACKABLE.test(entity) || (MC.player.squaredDistanceTo(entity) > range.getValueSq()))
 			return false;
-		
-		if(MC.player.squaredDistanceTo(entity) > range.getValueSq())
-			return false;
-		
+
 		return entityFilters.testOne(entity);
 	}
 }

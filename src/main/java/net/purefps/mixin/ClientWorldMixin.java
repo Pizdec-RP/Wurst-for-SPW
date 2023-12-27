@@ -28,7 +28,7 @@ public class ClientWorldMixin
 	@Shadow
 	@Final
 	private MinecraftClient client;
-	
+
 	/**
 	 * This is the part that makes BarrierESP work.
 	 */
@@ -37,15 +37,12 @@ public class ClientWorldMixin
 		cancellable = true)
 	private void onGetBlockParticle(CallbackInfoReturnable<Block> cir)
 	{
-		if(!PFPSClient.INSTANCE.getHax().barrierEspHack.isEnabled())
-			return;
-			
 		// Pause BarrierESP when holding a light in Creative Mode, since it
 		// would otherwise prevent the player from seeing light blocks.
-		if(client.interactionManager.getCurrentGameMode() == GameMode.CREATIVE
-			&& client.player.getMainHandStack().getItem() == Items.LIGHT)
+		if(!PFPSClient.INSTANCE.getHax().barrierEspHack.isEnabled() || (client.interactionManager.getCurrentGameMode() == GameMode.CREATIVE
+			&& client.player.getMainHandStack().getItem() == Items.LIGHT))
 			return;
-		
+
 		cir.setReturnValue(Blocks.BARRIER);
 	}
 }

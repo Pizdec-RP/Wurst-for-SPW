@@ -18,30 +18,30 @@ public final class FilterPassiveSetting extends EntityFilterCheckbox
 {
 	private static final String EXCEPTIONS_TEXT = "\n\nThis filter does not"
 		+ " affect wolves, bees, polar bears, pufferfish, and villagers.";
-	
+
 	public FilterPassiveSetting(String description, boolean checked)
 	{
 		super("Filter passive mobs", description + EXCEPTIONS_TEXT, checked);
 	}
-	
+
 	@Override
 	public boolean test(Entity e)
 	{
 		// never filter out neutral mobs (including pufferfish)
 		if(e instanceof Angerable || e instanceof PufferfishEntity)
 			return true;
-		
+
 		return !(e instanceof AnimalEntity || e instanceof AmbientEntity
 			|| e instanceof WaterCreatureEntity);
 	}
-	
+
 	public static FilterPassiveSetting genericCombat(boolean checked)
 	{
 		return new FilterPassiveSetting("Won't attack animals like pigs and"
 			+ " cows, ambient mobs like bats, and water mobs like fish, squid"
 			+ " and dolphins.", checked);
 	}
-	
+
 	public static FilterPassiveSetting genericVision(boolean checked)
 	{
 		return new FilterPassiveSetting("Won't show animals like pigs and"

@@ -31,7 +31,7 @@ public class BlockEntityRenderDispatcherMixin
 	{
 		RenderBlockEntityEvent event = new RenderBlockEntityEvent(blockEntity);
 		EventManager.fire(event);
-		
+
 		if(event.isCancelled())
 			ci.cancel();
 	}

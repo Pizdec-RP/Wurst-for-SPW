@@ -23,27 +23,27 @@ import net.purefps.util.BlockBreaker.BlockBreakingParams;
 public enum BlockPlacer
 {
 	;
-	
+
 	private static final PFPSClient WURST = PFPSClient.INSTANCE;
 	private static final MinecraftClient MC = PFPSClient.MC;
 	private static final IMinecraftClient IMC = PFPSClient.IMC;
-	
+
 	public static boolean placeOneBlock(BlockPos pos)
 	{
 		BlockPlacingParams params = getBlockPlacingParams(pos);
 		if(params == null)
 			return false;
-		
+
 		// face block
 		WURST.getRotationFaker().faceVectorPacket(params.hitVec);
-		
+
 		// place block
 		IMC.getInteractionManager().rightClickBlock(params.neighbor,
 			params.side, params.hitVec);
-		
+
 		return true;
 	}
-	
+
 	/**
 	 * Returns everything you need to place a block at the given position, such
 	 * as the position of the block to place against (can be a neighbor or the
@@ -62,48 +62,48 @@ public enum BlockPlacer
 			// the block, so we can just use BlockBreaker to get them
 			BlockBreakingParams breakParams =
 				BlockBreaker.getBlockBreakingParams(pos);
-			
+
 			// should never happen, but just in case
 			if(breakParams == null)
 				return null;
-			
+
 			return new BlockPlacingParams(pos, breakParams.side(),
 				breakParams.hitVec(), breakParams.distanceSq(),
 				breakParams.lineOfSight());
 		}
-		
+
 		Direction[] sides = Direction.values();
 		Vec3d[] hitVecs = new Vec3d[sides.length];
-		
+
 		// get hit vectors for all usable sides
 		for(int i = 0; i < sides.length; i++)
 		{
 			BlockPos neighbor = pos.offset(sides[i]);
 			BlockState state = BlockUtils.getState(neighbor);
 			VoxelShape shape = state.getOutlineShape(MC.world, neighbor);
-			
+
 			// if neighbor has no shape or is replaceable, it can't be used
 			if(shape.isEmpty() || state.isReplaceable())
 				continue;
-			
+
 			Box box = shape.getBoundingBox();
 			Vec3d halfSize = new Vec3d(box.maxX - box.minX, box.maxY - box.minY,
 				box.maxZ - box.minZ).multiply(0.5);
 			Vec3d center = Vec3d.of(neighbor).add(box.getCenter());
-			
+
 			Vec3i dirVec = sides[i].getOpposite().getVector();
 			Vec3d relHitVec = new Vec3d(halfSize.x * dirVec.getX(),
 				halfSize.y * dirVec.getY(), halfSize.z * dirVec.getZ());
 			hitVecs[i] = center.add(relHitVec);
 		}
-		
+
 		Vec3d eyesPos = RotationUtils.getEyesPos();
 		Vec3d posVec = Vec3d.ofCenter(pos);
-		
+
 		double distanceSqToPosVec = eyesPos.squaredDistanceTo(posVec);
 		double[] distancesSq = new double[sides.length];
 		boolean[] linesOfSight = new boolean[sides.length];
-		
+
 		// calculate distances and line of sight
 		for(int i = 0; i < sides.length; i++)
 		{
@@ -113,52 +113,52 @@ public enum BlockPlacer
 				distancesSq[i] = Double.MAX_VALUE;
 				continue;
 			}
-			
+
 			distancesSq[i] = eyesPos.squaredDistanceTo(hitVecs[i]);
-			
+
 			// to place against a neighbor in front of the block, we would
 			// have to place against that neighbor's rear face, which can't
 			// possibly have line of sight
 			if(distancesSq[i] <= distanceSqToPosVec)
 				continue;
-			
+
 			linesOfSight[i] = BlockUtils.hasLineOfSight(eyesPos, hitVecs[i]);
 		}
-		
+
 		// decide which side to use
 		Direction side = sides[0];
 		for(int i = 1; i < sides.length; i++)
 		{
 			int bestSide = side.ordinal();
-			
+
 			// skip unusable sides
 			if(hitVecs[i] == null)
 				continue;
-			
+
 			// prefer sides with LOS
 			if(!linesOfSight[bestSide] && linesOfSight[i])
 			{
 				side = sides[i];
 				continue;
 			}
-			
+
 			if(linesOfSight[bestSide] && !linesOfSight[i])
 				continue;
-			
+
 			// then pick the furthest side
 			if(distancesSq[i] > distancesSq[bestSide])
 				side = sides[i];
 		}
-		
+
 		// if no usable side was found, return null
 		if(hitVecs[side.ordinal()] == null)
 			return null;
-		
+
 		return new BlockPlacingParams(pos.offset(side), side.getOpposite(),
 			hitVecs[side.ordinal()], distancesSq[side.ordinal()],
 			linesOfSight[side.ordinal()]);
 	}
-	
+
 	public static record BlockPlacingParams(BlockPos neighbor, Direction side,
 		Vec3d hitVec, double distanceSq, boolean lineOfSight)
 	{

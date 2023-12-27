@@ -17,7 +17,7 @@ public final class UnbindCmd extends Command
 		super("unbind", "Shortcut for '.binds remove'.", ".unbind <key>",
 			"Use .binds for more options.");
 	}
-	
+
 	@Override
 	public void call(String[] args) throws CmdException
 	{

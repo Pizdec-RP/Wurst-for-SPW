@@ -22,7 +22,7 @@ import net.purefps.events.PacketOutputListener.PacketOutputEvent;
 public interface ConnectionPacketOutputListener extends Listener
 {
 	public void onSentConnectionPacket(ConnectionPacketOutputEvent event);
-	
+
 	/**
 	 * Similar to {@link PacketOutputEvent}, but also captures packets that are
 	 * sent before the client has finished connecting to the server. Most hacks
@@ -32,34 +32,34 @@ public interface ConnectionPacketOutputListener extends Listener
 		extends CancellableEvent<ConnectionPacketOutputListener>
 	{
 		private Packet<?> packet;
-		
+
 		public ConnectionPacketOutputEvent(Packet<?> packet)
 		{
 			this.packet = packet;
 		}
-		
+
 		public Packet<?> getPacket()
 		{
 			return packet;
 		}
-		
+
 		public void setPacket(Packet<?> packet)
 		{
 			this.packet = packet;
 		}
-		
+
 		@Override
 		public void fire(ArrayList<ConnectionPacketOutputListener> listeners)
 		{
 			for(ConnectionPacketOutputListener listener : listeners)
 			{
 				listener.onSentConnectionPacket(this);
-				
+
 				if(isCancelled())
 					break;
 			}
 		}
-		
+
 		@Override
 		public Class<ConnectionPacketOutputListener> getListenerType()
 		{

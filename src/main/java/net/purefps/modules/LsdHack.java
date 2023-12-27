@@ -21,7 +21,7 @@ public final class LsdHack extends Hack
 		super("LSD");
 		setCategory(Category.FUN);
 	}
-	
+
 	@Override
 	public void onEnable()
 	{
@@ -30,14 +30,14 @@ public final class LsdHack extends Hack
 			setEnabled(false);
 			return;
 		}
-		
+
 		if(MC.gameRenderer.getPostProcessor() != null)
 			MC.gameRenderer.disablePostProcessor();
-		
+
 		MC.gameRenderer
 			.loadPostProcessor(new Identifier("shaders/post/wobble.json"));
 	}
-	
+
 	@Override
 	public void onDisable()
 	{

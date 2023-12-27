@@ -18,19 +18,19 @@ public final class LiquidsHack extends Hack implements HitResultRayTraceListener
 		super("Liquids");
 		setCategory(Category.BLOCKS);
 	}
-	
+
 	@Override
 	protected void onEnable()
 	{
 		EVENTS.add(HitResultRayTraceListener.class, this);
 	}
-	
+
 	@Override
 	protected void onDisable()
 	{
 		EVENTS.remove(HitResultRayTraceListener.class, this);
 	}
-	
+
 	@Override
 	public void onHitResultRayTrace(float partialTicks)
 	{

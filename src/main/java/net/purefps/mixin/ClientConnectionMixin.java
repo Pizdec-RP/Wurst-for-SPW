@@ -31,7 +31,7 @@ public abstract class ClientConnectionMixin
 {
 	private ConcurrentLinkedQueue<ConnectionPacketOutputEvent> events =
 		new ConcurrentLinkedQueue<>();
-	
+
 	@Inject(at = @At(value = "INVOKE",
 		target = "Lnet/minecraft/network/ClientConnection;handlePacket(Lnet/minecraft/network/packet/Packet;Lnet/minecraft/network/listener/PacketListener;)V",
 		ordinal = 0),
@@ -42,11 +42,11 @@ public abstract class ClientConnectionMixin
 	{
 		PacketInputEvent event = new PacketInputEvent(packet);
 		EventManager.fire(event);
-		
+
 		if(event.isCancelled())
 			ci.cancel();
 	}
-	
+
 	@ModifyVariable(at = @At("HEAD"),
 		method = "send(Lnet/minecraft/network/packet/Packet;Lnet/minecraft/network/PacketCallbacks;)V")
 	public Packet<?> modifyPacket(Packet<?> packet)
@@ -57,7 +57,7 @@ public abstract class ClientConnectionMixin
 		EventManager.fire(event);
 		return event.getPacket();
 	}
-	
+
 	@Inject(at = @At("HEAD"),
 		method = "send(Lnet/minecraft/network/packet/Packet;Lnet/minecraft/network/PacketCallbacks;)V",
 		cancellable = true)
@@ -67,19 +67,19 @@ public abstract class ClientConnectionMixin
 		ConnectionPacketOutputEvent event = getEvent(packet);
 		if(event == null)
 			return;
-		
+
 		if(event.isCancelled())
 			ci.cancel();
-		
+
 		events.remove(event);
 	}
-	
+
 	private ConnectionPacketOutputEvent getEvent(Packet<?> packet)
 	{
 		for(ConnectionPacketOutputEvent event : events)
 			if(event.getPacket() == packet)
 				return event;
-			
+
 		return null;
 	}
 }

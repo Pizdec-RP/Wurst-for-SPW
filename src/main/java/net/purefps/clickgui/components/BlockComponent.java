@@ -34,32 +34,32 @@ public final class BlockComponent extends Component
 {
 	private static final int BLOCK_WITDH = 24;
 	private final BlockSetting setting;
-	
+
 	public BlockComponent(BlockSetting setting)
 	{
 		this.setting = setting;
-		
+
 		setWidth(getDefaultWidth());
 		setHeight(getDefaultHeight());
 	}
-	
+
 	@Override
 	public void handleMouseClick(double mouseX, double mouseY, int mouseButton)
 	{
 		if(mouseX < getX() + getWidth() - BLOCK_WITDH)
 			return;
-		
+
 		if(mouseButton == 0)
 		{
 			Screen currentScreen = PFPSClient.MC.currentScreen;
 			EditBlockScreen editScreen =
 				new EditBlockScreen(currentScreen, setting);
 			PFPSClient.MC.setScreen(editScreen);
-			
+
 		}else if(mouseButton == 1)
 			setting.resetToDefault();
 	}
-	
+
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY,
 		float partialTicks)
@@ -68,13 +68,13 @@ public final class BlockComponent extends Component
 		float[] bgColor = gui.getBgColor();
 		int txtColor = gui.getTxtColor();
 		float opacity = gui.getOpacity();
-		
+
 		int x1 = getX();
 		int x2 = x1 + getWidth();
 		int x3 = x2 - BLOCK_WITDH;
 		int y1 = getY();
 		int y2 = y1 + getHeight();
-		
+
 		int scroll = getParent().isScrollingEnabled()
 			? getParent().getScrollOffset() : 0;
 		boolean hovering = mouseX >= x1 && mouseY >= y1 && mouseX < x2
@@ -82,15 +82,15 @@ public final class BlockComponent extends Component
 			&& mouseY < getParent().getHeight() - 13 - scroll;
 		boolean hText = hovering && mouseX < x3;
 		boolean hBlock = hovering && mouseX >= x3;
-		
+
 		ItemStack stack = new ItemStack(setting.getBlock());
-		
+
 		MatrixStack matrixStack = context.getMatrices();
 		Matrix4f matrix = matrixStack.peek().getPositionMatrix();
 		Tessellator tessellator = RenderSystem.renderThreadTesselator();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		RenderSystem.setShader(GameRenderer::getPositionProgram);
-		
+
 		// tooltip
 		if(hText)
 			gui.setTooltip(setting.getWrappedDescription(200));
@@ -104,7 +104,7 @@ public final class BlockComponent extends Component
 			tooltip += "\n\u00a7e[right-click]\u00a7r to reset";
 			gui.setTooltip(tooltip);
 		}
-		
+
 		// background
 		RenderSystem.setShaderColor(bgColor[0], bgColor[1], bgColor[2],
 			opacity);
@@ -115,18 +115,18 @@ public final class BlockComponent extends Component
 		bufferBuilder.vertex(matrix, x2, y2, 0).next();
 		bufferBuilder.vertex(matrix, x2, y1, 0).next();
 		tessellator.draw();
-		
+
 		// setting name
 		RenderSystem.setShaderColor(1, 1, 1, 1);
 		TextRenderer tr = PFPSClient.MC.textRenderer;
 		String text = setting.getName() + ":";
 		context.drawText(tr, text, x1, y1 + 2, txtColor, false);
-		
+
 		RenderUtils.drawItem(context, stack, x3, y1, true);
-		
+
 		GL11.glEnable(GL11.GL_BLEND);
 	}
-	
+
 	@Override
 	public int getDefaultWidth()
 	{
@@ -134,13 +134,13 @@ public final class BlockComponent extends Component
 		String text = setting.getName() + ":";
 		return tr.getWidth(text) + BLOCK_WITDH + 4;
 	}
-	
+
 	@Override
 	public int getDefaultHeight()
 	{
 		return BLOCK_WITDH;
 	}
-	
+
 	private String getBlockName(ItemStack stack)
 	{
 		if(stack.isEmpty())

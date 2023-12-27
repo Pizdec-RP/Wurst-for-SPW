@@ -16,19 +16,19 @@ public final class FilterZombieVillagersSetting extends EntityFilterCheckbox
 	{
 		super("Filter zombie villagers", description, checked);
 	}
-	
+
 	@Override
 	public boolean test(Entity e)
 	{
 		return !(e instanceof ZombieVillagerEntity);
 	}
-	
+
 	public static FilterZombieVillagersSetting genericCombat(boolean checked)
 	{
 		return new FilterZombieVillagersSetting(
 			"Won't attack zombified villagers.", checked);
 	}
-	
+
 	public static FilterZombieVillagersSetting genericVision(boolean checked)
 	{
 		return new FilterZombieVillagersSetting(

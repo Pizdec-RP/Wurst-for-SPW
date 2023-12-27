@@ -25,35 +25,35 @@ public final class KeybindList
 {
 	public static final Set<Keybind> DEFAULT_KEYBINDS = createDefaultKeybinds();
 	private final ArrayList<Keybind> keybinds = new ArrayList<>();
-	
+
 	private final KeybindsFile keybindsFile;
 	private final Path profilesFolder =
 		PFPSClient.INSTANCE.getWurstFolder().resolve("keybinds");
-	
+
 	public KeybindList(Path keybindsFile)
 	{
 		this.keybindsFile = new KeybindsFile(keybindsFile);
 		this.keybindsFile.load(this);
 	}
-	
+
 	public String getCommands(String key)
 	{
 		for(Keybind keybind : keybinds)
 		{
 			if(!key.equals(keybind.getKey()))
 				continue;
-			
+
 			return keybind.getCommands();
 		}
-		
+
 		return null;
 	}
-	
+
 	public List<Keybind> getAllKeybinds()
 	{
 		return Collections.unmodifiableList(keybinds);
 	}
-	
+
 	public void add(String key, String commands)
 	{
 		keybinds.removeIf(keybind -> key.equals(keybind.getKey()));
@@ -61,7 +61,7 @@ public final class KeybindList
 		keybinds.sort(null);
 		keybindsFile.save(this);
 	}
-	
+
 	public void setKeybinds(Set<Keybind> keybinds)
 	{
 		this.keybinds.clear();
@@ -69,50 +69,50 @@ public final class KeybindList
 		this.keybinds.sort(null);
 		keybindsFile.save(this);
 	}
-	
+
 	public void remove(String key)
 	{
 		keybinds.removeIf(keybind -> key.equals(keybind.getKey()));
 		keybindsFile.save(this);
 	}
-	
+
 	public void removeAll()
 	{
 		keybinds.clear();
 		keybindsFile.save(this);
 	}
-	
+
 	public Path getProfilesFolder()
 	{
 		return profilesFolder;
 	}
-	
+
 	public ArrayList<Path> listProfiles()
 	{
 		if(!Files.isDirectory(profilesFolder))
 			return new ArrayList<>();
-		
+
 		try(Stream<Path> files = Files.list(profilesFolder))
 		{
 			return files.filter(Files::isRegularFile)
 				.collect(Collectors.toCollection(ArrayList::new));
-			
+
 		}catch(IOException e)
 		{
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	public void loadProfile(String fileName) throws IOException, JsonException
 	{
 		keybindsFile.loadProfile(this, profilesFolder.resolve(fileName));
 	}
-	
+
 	public void saveProfile(String fileName) throws IOException, JsonException
 	{
 		keybindsFile.saveProfile(this, profilesFolder.resolve(fileName));
 	}
-	
+
 	private static Set<Keybind> createDefaultKeybinds()
 	{
 		Set<Keybind> set = new LinkedHashSet<>();
@@ -133,7 +133,7 @@ public final class KeybindList
 		addKB(set, "y", "sneak");
 		return Collections.unmodifiableSet(set);
 	}
-	
+
 	private static void addKB(Set<Keybind> set, String key, String cmds)
 	{
 		set.add(new Keybind("key.keyboard." + key, cmds));

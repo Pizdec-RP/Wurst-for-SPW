@@ -20,33 +20,33 @@ public final class FilterNeutralSetting extends AttackDetectingEntityFilter
 	{
 		super("Filter neutral mobs", description, selected, checked);
 	}
-	
+
 	public FilterNeutralSetting(String description, Mode selected)
 	{
 		this(description, selected, false);
 	}
-	
+
 	@Override
 	public boolean onTest(Entity e)
 	{
 		return !(e instanceof Angerable || e instanceof PufferfishEntity
 			|| e instanceof PiglinEntity);
 	}
-	
+
 	@Override
 	public boolean ifCalmTest(Entity e)
 	{
 		// special case for pufferfish
 		if(e instanceof PufferfishEntity pfe)
 			return pfe.getPuffState() > 0;
-		
+
 		if(e instanceof Angerable || e instanceof PiglinEntity)
 			if(e instanceof MobEntity me)
 				return me.isAttacking();
-			
+
 		return true;
 	}
-	
+
 	public static FilterNeutralSetting genericCombat(Mode selected)
 	{
 		return new FilterNeutralSetting("When set to \u00a7lOn\u00a7r,"
@@ -58,7 +58,7 @@ public final class FilterNeutralSetting extends AttackDetectingEntityFilter
 			+ "When set to \u00a7lOff\u00a7r, this filter does nothing and"
 			+ " neutral mobs can be attacked.", selected);
 	}
-	
+
 	public static FilterNeutralSetting genericVision(Mode selected)
 	{
 		return new FilterNeutralSetting("When set to \u00a7lOn\u00a7r,"
@@ -68,7 +68,7 @@ public final class FilterNeutralSetting extends AttackDetectingEntityFilter
 			+ "When set to \u00a7lOff\u00a7r, this filter does nothing and"
 			+ " neutral mobs can be shown.", selected);
 	}
-	
+
 	public static FilterNeutralSetting onOffOnly(String description,
 		boolean onByDefault)
 	{

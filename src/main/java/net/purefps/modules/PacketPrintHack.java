@@ -1,18 +1,20 @@
-// 
+//
 // Decompiled by Procyon v0.6.0
-// 
+//
 
 package net.purefps.modules;
 
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import net.minecraft.network.packet.Packet;
 import net.purefps.Category;
-import java.util.concurrent.CopyOnWriteArrayList;
-import net.purefps.settings.SliderSetting;
-import java.util.List;
+import net.purefps.Feature;
 import net.purefps.SearchTags;
 import net.purefps.events.PacketInputListener;
 import net.purefps.events.PacketOutputListener;
 import net.purefps.module.Hack;
+import net.purefps.settings.SliderSetting;
 
 @SearchTags({ "packet print" })
 public class PacketPrintHack extends Hack implements PacketOutputListener, PacketInputListener
@@ -20,25 +22,27 @@ public class PacketPrintHack extends Hack implements PacketOutputListener, Packe
     public List<Packet<?>> input;
     public List<Packet<?>> output;
     private final SliderSetting pakcap;
-    
+
     public PacketPrintHack() {
         super("PacketPrint");
-        this.input = new CopyOnWriteArrayList<Packet<?>>();
-        this.output = new CopyOnWriteArrayList<Packet<?>>();
+        this.input = new CopyOnWriteArrayList<>();
+        this.output = new CopyOnWriteArrayList<>();
         this.pakcap = new SliderSetting("capacity of packets", "", 10.0, 0.0, 40.0, 1.0, SliderSetting.ValueDisplay.INTEGER.withLabel(0.0, "nigga why?"));
         this.setCategory(Category.OTHER);
     }
-    
-    public void onEnable() {
-        PacketPrintHack.EVENTS.add(PacketOutputListener.class, this);
-        PacketPrintHack.EVENTS.add(PacketInputListener.class, this);
+
+    @Override
+	public void onEnable() {
+        Feature.EVENTS.add(PacketOutputListener.class, this);
+        Feature.EVENTS.add(PacketInputListener.class, this);
     }
-    
-    public void onDisable() {
-        PacketPrintHack.EVENTS.remove(PacketOutputListener.class, this);
-        PacketPrintHack.EVENTS.remove(PacketInputListener.class, this);
+
+    @Override
+	public void onDisable() {
+        Feature.EVENTS.remove(PacketOutputListener.class, this);
+        Feature.EVENTS.remove(PacketInputListener.class, this);
     }
-    
+
     @Override
     public void onSentPacket(final PacketOutputEvent event) {
         this.output.add(event.getPacket());
@@ -46,7 +50,7 @@ public class PacketPrintHack extends Hack implements PacketOutputListener, Packe
             this.output.remove(0);
         }
     }
-    
+
     @Override
     public void onReceivedPacket(final PacketInputEvent event) {
         this.input.add(event.getPacket());

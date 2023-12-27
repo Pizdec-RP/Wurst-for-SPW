@@ -30,25 +30,25 @@ public final class BlockSetting extends Setting
 	private String blockName = "";
 	private final String defaultName;
 	private final boolean allowAir;
-	
+
 	public BlockSetting(String name, String description, String blockName,
 		boolean allowAir)
 	{
 		super(name, description);
-		
+
 		Block block = BlockUtils.getBlockFromNameOrID(blockName);
 		Objects.requireNonNull(block);
 		this.blockName = BlockUtils.getName(block);
-		
+
 		defaultName = this.blockName;
 		this.allowAir = allowAir;
 	}
-	
+
 	public BlockSetting(String name, String blockName, boolean allowAir)
 	{
 		this(name, "", blockName, allowAir);
 	}
-	
+
 	/**
 	 * @return this setting's {@link Block}. Cannot be null.
 	 */
@@ -56,78 +56,72 @@ public final class BlockSetting extends Setting
 	{
 		return BlockUtils.getBlockFromName(blockName);
 	}
-	
+
 	public String getBlockName()
 	{
 		return blockName;
 	}
-	
+
 	public void setBlock(Block block)
 	{
-		if(block == null)
+		if((block == null) || (!allowAir && block instanceof AirBlock))
 			return;
-		
-		if(!allowAir && block instanceof AirBlock)
-			return;
-		
+
 		String newName = Objects.requireNonNull(BlockUtils.getName(block));
-		
+
 		if(blockName.equals(newName))
 			return;
-		
+
 		blockName = newName;
 		PFPSClient.INSTANCE.saveSettings();
 	}
-	
+
 	public void setBlockName(String blockName)
 	{
 		Block block = BlockUtils.getBlockFromNameOrID(blockName);
 		Objects.requireNonNull(block);
-		
+
 		setBlock(block);
 	}
-	
+
 	public void resetToDefault()
 	{
 		blockName = defaultName;
 		PFPSClient.INSTANCE.saveSettings();
 	}
-	
+
 	@Override
 	public Component getComponent()
 	{
 		return new BlockComponent(this);
 	}
-	
+
 	@Override
 	public void fromJson(JsonElement json)
 	{
 		try
 		{
 			String newName = JsonUtils.getAsString(json);
-			
+
 			Block newBlock = BlockUtils.getBlockFromNameOrID(newName);
-			if(newBlock == null)
+			if((newBlock == null) || (!allowAir && newBlock instanceof AirBlock))
 				throw new JsonException();
-			
-			if(!allowAir && newBlock instanceof AirBlock)
-				throw new JsonException();
-			
+
 			blockName = BlockUtils.getName(newBlock);
-			
+
 		}catch(JsonException e)
 		{
 			e.printStackTrace();
 			resetToDefault();
 		}
 	}
-	
+
 	@Override
 	public JsonElement toJson()
 	{
 		return new JsonPrimitive(blockName);
 	}
-	
+
 	@Override
 	public JsonObject exportWikiData()
 	{
@@ -139,22 +133,22 @@ public final class BlockSetting extends Setting
 		json.addProperty("allowAir", allowAir);
 		return json;
 	}
-	
+
 	@Override
 	public Set<PossibleKeybind> getPossibleKeybinds(String featureName)
 	{
 		String fullName = featureName + " " + getName();
-		
+
 		String command = ".setblock " + featureName.toLowerCase() + " ";
 		command += getName().toLowerCase().replace(" ", "_") + " ";
-		
+
 		LinkedHashSet<PossibleKeybind> pkb = new LinkedHashSet<>();
 		// Can't just list all the blocks here. Would need to change UI to allow
 		// user to choose a block after selecting this option.
 		// pkb.add(new PossibleKeybind(command + "dirt", "Set " + fullName + "
 		// to dirt"));
 		pkb.add(new PossibleKeybind(command + "reset", "Reset " + fullName));
-		
+
 		return pkb;
 	}
 }

@@ -29,40 +29,40 @@ public final class TpCmd extends Command
 				+ " Freecam position by typing \".tp ~ ~ ~\" while Freecam is"
 				+ " enabled.",
 			true);
-	
+
 	public TpCmd()
 	{
 		super("tp", "Teleports you up to 10 blocks away.", ".tp <x> <y> <z>",
 			".tp <entity>");
 		addSetting(disableFreecam);
 	}
-	
+
 	@Override
 	public void call(String[] args) throws CmdException
 	{
 		BlockPos pos = argsToPos(args);
-		
+
 		if(disableFreecam.isChecked() && WURST.getHax().freecamHack.isEnabled())
 			WURST.getHax().freecamHack.setEnabled(false);
-		
+
 		MC.player.setPosition(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
 	}
-	
+
 	private BlockPos argsToPos(String... args) throws CmdException
 	{
 		switch(args.length)
 		{
 			default:
 			throw new CmdSyntaxError("Invalid coordinates.");
-			
+
 			case 1:
 			return argsToEntityPos(args[0]);
-			
+
 			case 3:
 			return argsToXyzPos(args);
 		}
 	}
-	
+
 	private BlockPos argsToEntityPos(String name) throws CmdError
 	{
 		LivingEntity entity = StreamSupport
@@ -75,19 +75,19 @@ public final class TpCmd extends Command
 			.min(
 				Comparator.comparingDouble(e -> MC.player.squaredDistanceTo(e)))
 			.orElse(null);
-		
+
 		if(entity == null)
 			throw new CmdError("Entity \"" + name + "\" could not be found.");
-		
+
 		return BlockPos.ofFloored(entity.getPos());
 	}
-	
+
 	private BlockPos argsToXyzPos(String... xyz) throws CmdSyntaxError
 	{
 		BlockPos playerPos = BlockPos.ofFloored(MC.player.getPos());
 		int[] player = {playerPos.getX(), playerPos.getY(), playerPos.getZ()};
 		int[] pos = new int[3];
-		
+
 		for(int i = 0; i < 3; i++)
 			if(MathUtils.isInteger(xyz[i]))
 				pos[i] = Integer.parseInt(xyz[i]);
@@ -98,7 +98,7 @@ public final class TpCmd extends Command
 				pos[i] = player[i] + Integer.parseInt(xyz[i].substring(1));
 			else
 				throw new CmdSyntaxError("Invalid coordinates.");
-			
+
 		return new BlockPos(pos[0], pos[1], pos[2]);
 	}
 }

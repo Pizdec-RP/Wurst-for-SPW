@@ -15,12 +15,12 @@ import net.purefps.util.BlockUtils;
 public enum TreeBotUtils
 {
 	;
-	
+
 	public static boolean isLog(BlockPos pos)
 	{
 		return BlockUtils.getState(pos).isIn(BlockTags.LOGS);
 	}
-	
+
 	public static boolean isLeaves(BlockPos pos)
 	{
 		BlockState state = BlockUtils.getState(pos);

@@ -26,33 +26,33 @@ public final class UpdateBooksSetting
 				+ " price.",
 			UpdateBooks.values(), UpdateBooks.REMOVE);
 	}
-	
+
 	public enum UpdateBooks
 	{
 		OFF("Off"),
 		REMOVE("Remove"),
 		PRICE("Price");
-		
+
 		private String name;
-		
+
 		private UpdateBooks(String name)
 		{
 			this.name = name;
 		}
-		
+
 		public void update(BookOffersSetting wantedBooks, BookOffer offer)
 		{
 			int index = wantedBooks.indexOf(offer);
-			
+
 			switch(this)
 			{
 				case OFF:
 				return;
-				
+
 				case REMOVE:
 				wantedBooks.remove(index);
 				break;
-				
+
 				case PRICE:
 				if(offer.price() <= 1)
 					wantedBooks.remove(index);
@@ -62,7 +62,7 @@ public final class UpdateBooksSetting
 				break;
 			}
 		}
-		
+
 		@Override
 		public String toString()
 		{

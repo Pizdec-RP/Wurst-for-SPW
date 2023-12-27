@@ -25,7 +25,7 @@ public final class OpenAiMessageCompleter extends MessageCompleter
 	{
 		super(modelSettings);
 	}
-	
+
 	@Override
 	protected JsonObject buildParams(String prompt)
 	{
@@ -42,7 +42,7 @@ public final class OpenAiMessageCompleter extends MessageCompleter
 			modelSettings.presencePenalty.getValue());
 		params.addProperty("frequency_penalty",
 			modelSettings.frequencyPenalty.getValue());
-		
+
 		// add the prompt, depending on the model
 		if(modelSettings.openAiModel.getSelected().isChatModel())
 		{
@@ -52,13 +52,13 @@ public final class OpenAiMessageCompleter extends MessageCompleter
 			promptMessage.addProperty("content", prompt);
 			messages.add(promptMessage);
 			params.add("messages", messages);
-			
+
 		}else
 			params.addProperty("prompt", prompt);
-		
+
 		return params;
 	}
-	
+
 	@Override
 	protected WsonObject requestCompletion(JsonObject parameters)
 		throws IOException, JsonException
@@ -67,14 +67,14 @@ public final class OpenAiMessageCompleter extends MessageCompleter
 		URL url = modelSettings.openAiModel.getSelected().isChatModel()
 			? new URL(modelSettings.openaiChatEndpoint.getValue())
 			: new URL(modelSettings.openaiLegacyEndpoint.getValue());
-		
+
 		// set up the API request
 		HttpURLConnection conn = (HttpURLConnection)url.openConnection();
 		conn.setRequestMethod("POST");
 		conn.setRequestProperty("Content-Type", "application/json");
 		conn.setRequestProperty("Authorization",
 			"Bearer " + System.getenv("WURST_OPENAI_KEY"));
-		
+
 		// set the request body
 		conn.setDoOutput(true);
 		try(OutputStream os = conn.getOutputStream())
@@ -82,11 +82,11 @@ public final class OpenAiMessageCompleter extends MessageCompleter
 			os.write(JsonUtils.GSON.toJson(parameters).getBytes());
 			os.flush();
 		}
-		
+
 		// parse the response
 		return JsonUtils.parseConnectionToObject(conn);
 	}
-	
+
 	@Override
 	protected String extractCompletion(WsonObject response) throws JsonException
 	{
@@ -98,10 +98,10 @@ public final class OpenAiMessageCompleter extends MessageCompleter
 		else
 			completion =
 				response.getArray("choices").getObject(0).getString("text");
-		
+
 		// remove newlines
 		completion = completion.replace("\n", " ");
-		
+
 		return completion;
 	}
 }

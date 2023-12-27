@@ -43,7 +43,7 @@ public abstract class AbstractBlockStateMixin extends State<Block, BlockState>
 	{
 		super(object, immutableMap, mapCodec);
 	}
-	
+
 	@Inject(at = @At("TAIL"),
 		method = "isFullCube(Lnet/minecraft/world/BlockView;Lnet/minecraft/util/math/BlockPos;)Z",
 		cancellable = true)
@@ -52,10 +52,10 @@ public abstract class AbstractBlockStateMixin extends State<Block, BlockState>
 	{
 		IsNormalCubeEvent event = new IsNormalCubeEvent();
 		EventManager.fire(event);
-		
+
 		cir.setReturnValue(cir.getReturnValue() && !event.isCancelled());
 	}
-	
+
 	@Inject(at = @At("TAIL"),
 		method = "getAmbientOcclusionLightLevel(Lnet/minecraft/world/BlockView;Lnet/minecraft/util/math/BlockPos;)F",
 		cancellable = true)
@@ -65,11 +65,11 @@ public abstract class AbstractBlockStateMixin extends State<Block, BlockState>
 		GetAmbientOcclusionLightLevelEvent event =
 			new GetAmbientOcclusionLightLevelEvent((BlockState)(Object)this,
 				cir.getReturnValueF());
-		
+
 		EventManager.fire(event);
 		cir.setReturnValue(event.getLightLevel());
 	}
-	
+
 	@Inject(at = @At("HEAD"),
 		method = "getOutlineShape(Lnet/minecraft/world/BlockView;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/ShapeContext;)Lnet/minecraft/util/shape/VoxelShape;",
 		cancellable = true)
@@ -78,18 +78,18 @@ public abstract class AbstractBlockStateMixin extends State<Block, BlockState>
 	{
 		if(context == ShapeContext.absent())
 			return;
-		
+
 		HackList hax = PFPSClient.INSTANCE.getHax();
 		if(hax == null)
 			return;
-		
+
 		HandNoClipHack handNoClipHack = hax.handNoClipHack;
 		if(!handNoClipHack.isEnabled() || handNoClipHack.isBlockInList(pos))
 			return;
-		
+
 		cir.setReturnValue(VoxelShapes.empty());
 	}
-	
+
 	@Inject(at = @At("HEAD"),
 		method = "getCollisionShape(Lnet/minecraft/world/BlockView;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/ShapeContext;)Lnet/minecraft/util/shape/VoxelShape;",
 		cancellable = true)
@@ -98,15 +98,15 @@ public abstract class AbstractBlockStateMixin extends State<Block, BlockState>
 	{
 		if(getFluidState().isEmpty())
 			return;
-		
+
 		HackList hax = PFPSClient.INSTANCE.getHax();
 		if(hax == null || !hax.jesusHack.shouldBeSolid())
 			return;
-		
+
 		cir.setReturnValue(VoxelShapes.fullCube());
 		cir.cancel();
 	}
-	
+
 	@Shadow
 	public abstract FluidState getFluidState();
 }

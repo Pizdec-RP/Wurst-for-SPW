@@ -21,13 +21,13 @@ public final class SayCmd extends Command
 			"Sends the given chat message, even if it starts with a\n" + "dot.",
 			".say <message>");
 	}
-	
+
 	@Override
 	public void call(String[] args) throws CmdException
 	{
 		if(args.length < 1)
 			throw new CmdSyntaxError();
-		
+
 		String message = String.join(" ", args);
 		if(message.startsWith("/"))
 			MC.getNetworkHandler().sendChatCommand(message.substring(1));

@@ -25,28 +25,28 @@ public final class IngameHUD implements GUIRenderListener
 {
 	private final HackListHUD hackList = new HackListHUD();
 	private TabGui tabGui;
-	
+
 	@Override
 	public void onRenderGUI(DrawContext context, float partialTicks)
 	{
 		if(!PFPSClient.INSTANCE.isEnabled())
 			return;
-		
+
 		if(tabGui == null)
 			tabGui = new TabGui();
-		
+
 		boolean blend = GL11.glGetBoolean(GL11.GL_BLEND);
 		ClickGui clickGui = PFPSClient.INSTANCE.getGui();
-		
+
 		// GL settings
 		GL11.glDisable(GL11.GL_CULL_FACE);
-		
+
 		clickGui.updateColors();
-		
+
 		//wurstLogo.render(context);
 		hackList.render(context, partialTicks);
 		tabGui.render(context, partialTicks);
-		
+
 		final PacketPrintHack pp = PFPSClient.INSTANCE.getHax().packetPrintHack;
         int y = 0;
         final int x = PFPSClient.MC.getWindow().getScaledWidth();
@@ -70,21 +70,21 @@ public final class IngameHUD implements GUIRenderListener
         final String s = spos;
         final int n3 = PFPSClient.MC.getWindow().getScaledWidth() / 2 - tr.getWidth(spos) / 2;
         context.drawText(tr, s, n3, tr.fontHeight + 1, -1, true);
-		
+
 		// pinned windows
 		if(!(PFPSClient.MC.currentScreen instanceof ClickGuiScreen))
 			clickGui.renderPinnedWindows(context, partialTicks);
-		
+
 		// GL resets
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		RenderSystem.setShaderColor(1, 1, 1, 1);
-		
+
 		if(blend)
 			GL11.glEnable(GL11.GL_BLEND);
 		else
 			GL11.glDisable(GL11.GL_BLEND);
 	}
-	
+
 	public HackListHUD getHackList()
 	{
 		return hackList;

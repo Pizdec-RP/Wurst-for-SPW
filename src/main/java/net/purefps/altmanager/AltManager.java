@@ -21,47 +21,47 @@ public final class AltManager
 	private final ArrayList<Alt> alts = new ArrayList<>();
 	private int numPremium;
 	private int numCracked;
-	
+
 	public AltManager(Path altsFile, Path encFolder)
 	{
 		this.altsFile = new AltsFile(altsFile, encFolder);
 		this.altsFile.load(this);
 	}
-	
+
 	public boolean contains(String name)
 	{
 		for(Alt alt : alts)
 			if(alt.getName().equalsIgnoreCase(name))
 				return true;
-			
+
 		return false;
 	}
-	
+
 	public void add(Alt alt)
 	{
 		alts.add(alt);
 		sortAlts();
 		altsFile.save(this);
 	}
-	
+
 	public void addAll(Collection<Alt> c)
 	{
 		alts.addAll(c);
 		sortAlts();
 		altsFile.save(this);
 	}
-	
+
 	public void edit(Alt oldAlt, String newNameOrEmail, String newPassword)
 	{
 		remove(oldAlt);
-		
+
 		if(newPassword.isEmpty())
 			add(new CrackedAlt(newNameOrEmail, oldAlt.isFavorite()));
 		else
 			add(new MojangAlt(newNameOrEmail, newPassword, "",
 				oldAlt.isFavorite()));
 	}
-	
+
 	/**
 	 * Logs the user in with this Alt. Also updates the counter for checked alts
 	 * and saves the alt list file as necessary.
@@ -76,16 +76,16 @@ public final class AltManager
 	public void login(Alt alt) throws LoginException
 	{
 		boolean wasUnchecked = alt.isUncheckedPremium();
-		
+
 		alt.login();
-		
+
 		if(wasUnchecked)
 			numPremium++;
-		
+
 		if(!alt.isCracked())
 			altsFile.save(this);
 	}
-	
+
 	/**
 	 * Changes whether or not the Alt is marked as a favorite, then sorts the
 	 * alt list accordingly and saves the changes.
@@ -96,7 +96,7 @@ public final class AltManager
 		sortAlts();
 		altsFile.save(this);
 	}
-	
+
 	/**
 	 * Removes the Alt at the given index. Faster than {@link #remove(Alt)}.
 	 *
@@ -109,15 +109,15 @@ public final class AltManager
 	{
 		Alt alt = alts.get(index);
 		alts.remove(index);
-		
+
 		if(alt.isCracked())
 			numCracked--;
 		else if(alt.isCheckedPremium())
 			numPremium--;
-		
+
 		altsFile.save(this);
 	}
-	
+
 	/**
 	 * Removes the given Alt. Slower than {@link #remove(int)}. Fails safely and
 	 * silently if the given Alt is not in the list.
@@ -129,46 +129,46 @@ public final class AltManager
 	{
 		if(!alts.remove(alt))
 			return;
-		
+
 		if(alt.isCracked())
 			numCracked--;
 		else if(alt.isCheckedPremium())
 			numPremium--;
-		
+
 		altsFile.save(this);
 	}
-	
+
 	private void sortAlts()
 	{
 		Comparator<Alt> c = Comparator.comparing(a -> !a.isFavorite());
 		c = c.thenComparing(Alt::isCracked);
 		c = c.thenComparing(a -> a.getDisplayName().toLowerCase());
-		
+
 		ArrayList<Alt> newAlts = alts.stream().distinct().sorted(c)
 			.collect(Collectors.toCollection(ArrayList::new));
-		
+
 		alts.clear();
 		alts.addAll(newAlts);
-		
+
 		numCracked = (int)alts.stream().filter(Alt::isCracked).count();
 		numPremium = (int)alts.stream().filter(Alt::isCheckedPremium).count();
 	}
-	
+
 	public List<Alt> getList()
 	{
 		return Collections.unmodifiableList(alts);
 	}
-	
+
 	public int getNumPremium()
 	{
 		return numPremium;
 	}
-	
+
 	public int getNumCracked()
 	{
 		return numCracked;
 	}
-	
+
 	public Exception getFolderException()
 	{
 		return altsFile.getFolderException();

@@ -36,7 +36,7 @@ public class NavigatorRemoveKeybindScreen extends NavigatorScreen
 	private String selectedKey = "";
 	private String text = "Select the keybind you want to remove.";
 	private ButtonWidget removeButton;
-	
+
 	public NavigatorRemoveKeybindScreen(
 		TreeMap<String, PossibleKeybind> existingKeybinds,
 		NavigatorFeatureScreen parent)
@@ -44,7 +44,7 @@ public class NavigatorRemoveKeybindScreen extends NavigatorScreen
 		this.existingKeybinds = existingKeybinds;
 		this.parent = parent;
 	}
-	
+
 	@Override
 	protected void onResize()
 	{
@@ -54,31 +54,31 @@ public class NavigatorRemoveKeybindScreen extends NavigatorScreen
 				.dimensions(width / 2 - 151, height - 65, 149, 18).build();
 		removeButton.active = !selectedKey.isEmpty();
 		addDrawableChild(removeButton);
-		
+
 		// cancel button
 		addDrawableChild(ButtonWidget
 			.builder(Text.literal("Cancel"), b -> client.setScreen(parent))
 			.dimensions(width / 2 + 2, height - 65, 149, 18).build());
 	}
-	
+
 	private void remove()
 	{
 		String oldCommands =
 			PFPSClient.INSTANCE.getKeybinds().getCommands(selectedKey);
 		if(oldCommands == null)
 			return;
-		
+
 		ArrayList<String> commandsList =
 			new ArrayList<>(Arrays.asList(oldCommands.replace(";", "\u00a7")
 				.replace("\u00a7\u00a7", ";").split("\u00a7")));
-		
+
 		for(int i = 0; i < commandsList.size(); i++)
 			commandsList.set(i, commandsList.get(i).trim());
-		
+
 		String command = existingKeybinds.get(selectedKey).getCommand();
 		while(commandsList.contains(command))
 			commandsList.remove(command);
-		
+
 		if(commandsList.isEmpty())
 			PFPSClient.INSTANCE.getKeybinds().remove(selectedKey);
 		else
@@ -87,13 +87,13 @@ public class NavigatorRemoveKeybindScreen extends NavigatorScreen
 				.replace(";", "\u00a7\u00a7").replace("\u00a7", ";");
 			PFPSClient.INSTANCE.getKeybinds().add(selectedKey, newCommands);
 		}
-		
+
 		PFPSClient.INSTANCE.getNavigator()
 			.addPreference(parent.getFeature().getName());
-		
+
 		client.setScreen(parent);
 	}
-	
+
 	@Override
 	protected void onKeyPress(int keyCode, int scanCode, int int_3)
 	{
@@ -101,7 +101,7 @@ public class NavigatorRemoveKeybindScreen extends NavigatorScreen
 			|| keyCode == GLFW.GLFW_KEY_BACKSPACE)
 			client.setScreen(parent);
 	}
-	
+
 	@Override
 	protected void onMouseClick(double x, double y, int button)
 	{
@@ -111,7 +111,7 @@ public class NavigatorRemoveKeybindScreen extends NavigatorScreen
 			PFPSClient.MC.setScreen(parent);
 			return;
 		}
-		
+
 		// commands
 		if(!hoveredKey.isEmpty())
 		{
@@ -119,14 +119,14 @@ public class NavigatorRemoveKeybindScreen extends NavigatorScreen
 			removeButton.active = true;
 		}
 	}
-	
+
 	@Override
 	protected void onUpdate()
 	{
 		// content height
 		setContentHeight(existingKeybinds.size() * 24 - 10);
 	}
-	
+
 	@Override
 	protected void onRender(DrawContext context, int mouseX, int mouseY,
 		float partialTicks)
@@ -134,12 +134,12 @@ public class NavigatorRemoveKeybindScreen extends NavigatorScreen
 		MatrixStack matrixStack = context.getMatrices();
 		ClickGui gui = PFPSClient.INSTANCE.getGui();
 		int txtColor = gui.getTxtColor();
-		
+
 		// title bar
 		context.drawCenteredTextWithShadow(client.textRenderer,
 			"Remove Keybind", middleX, 32, txtColor);
 		GL11.glEnable(GL11.GL_BLEND);
-		
+
 		// background
 		int bgx1 = middleX - 154;
 		int bgx2 = middleX + 154;
@@ -147,11 +147,11 @@ public class NavigatorRemoveKeybindScreen extends NavigatorScreen
 		int bgy2 = height - 43;
 		boolean noButtons = Screens.getButtons(this).isEmpty();
 		int bgy3 = bgy2 - (noButtons ? 0 : 24);
-		
+
 		// scissor box
 		RenderUtils.scissorBox(bgx1, bgy1, bgx2, bgy3);
 		GL11.glEnable(GL11.GL_SCISSOR_TEST);
-		
+
 		// possible keybinds
 		hoveredKey = "";
 		int yi = bgy1 - 12 + scroll;
@@ -160,13 +160,13 @@ public class NavigatorRemoveKeybindScreen extends NavigatorScreen
 			String key = entry.getKey();
 			PossibleKeybind keybind = entry.getValue();
 			yi += 24;
-			
+
 			// positions
 			int x1 = bgx1 + 2;
 			int x2 = bgx2 - 2;
 			int y1 = yi;
 			int y2 = y1 + 20;
-			
+
 			// color
 			if(mouseX >= x1 && mouseX <= x2 && mouseY >= y1 && mouseY <= y2)
 			{
@@ -179,10 +179,10 @@ public class NavigatorRemoveKeybindScreen extends NavigatorScreen
 				RenderSystem.setShaderColor(0F, 1F, 0F, 0.25F);
 			else
 				RenderSystem.setShaderColor(0.25F, 0.25F, 0.25F, 0.25F);
-			
+
 			// button
 			drawBox(matrixStack, x1, y1, x2, y2);
-			
+
 			// text
 			context.drawTextWithShadow(client.textRenderer,
 				key.replace("key.keyboard.", "") + ": "
@@ -193,7 +193,7 @@ public class NavigatorRemoveKeybindScreen extends NavigatorScreen
 				y1 + 1 + client.textRenderer.fontHeight, txtColor);
 			GL11.glEnable(GL11.GL_BLEND);
 		}
-		
+
 		// text
 		int textY = bgy1 + scroll + 2;
 		for(String line : text.split("\n"))
@@ -203,10 +203,10 @@ public class NavigatorRemoveKeybindScreen extends NavigatorScreen
 			textY += client.textRenderer.fontHeight;
 		}
 		GL11.glEnable(GL11.GL_BLEND);
-		
+
 		// scissor box
 		GL11.glDisable(GL11.GL_SCISSOR_TEST);
-		
+
 		// buttons below scissor box
 		for(ClickableWidget button : Screens.getButtons(this))
 		{
@@ -215,7 +215,7 @@ public class NavigatorRemoveKeybindScreen extends NavigatorScreen
 			int x2 = x1 + button.getWidth();
 			int y1 = button.getY();
 			int y2 = y1 + 18;
-			
+
 			// color
 			if(!button.active)
 				RenderSystem.setShaderColor(0F, 0F, 0F, 0.25F);
@@ -224,10 +224,10 @@ public class NavigatorRemoveKeybindScreen extends NavigatorScreen
 				RenderSystem.setShaderColor(0.375F, 0.375F, 0.375F, 0.25F);
 			else
 				RenderSystem.setShaderColor(0.25F, 0.25F, 0.25F, 0.25F);
-			
+
 			// button
 			drawBox(matrixStack, x1, y1, x2, y2);
-			
+
 			// text
 			context.drawCenteredTextWithShadow(client.textRenderer,
 				button.getMessage().getString(), (x1 + x2) / 2, y1 + 5,
@@ -235,20 +235,20 @@ public class NavigatorRemoveKeybindScreen extends NavigatorScreen
 			GL11.glEnable(GL11.GL_BLEND);
 		}
 	}
-	
+
 	@Override
 	protected void onMouseDrag(double mouseX, double mouseY, int button,
 		double double_3, double double_4)
 	{
-		
+
 	}
-	
+
 	@Override
 	protected void onMouseRelease(double x, double y, int button)
 	{
-		
+
 	}
-	
+
 	@Override
 	public boolean shouldCloseOnEsc()
 	{

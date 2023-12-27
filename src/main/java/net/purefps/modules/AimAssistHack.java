@@ -24,7 +24,30 @@ import net.purefps.settings.CheckboxSetting;
 import net.purefps.settings.SliderSetting;
 import net.purefps.settings.SliderSetting.ValueDisplay;
 import net.purefps.settings.filterlists.EntityFilterList;
-import net.purefps.settings.filters.*;
+import net.purefps.settings.filters.AttackDetectingEntityFilter;
+import net.purefps.settings.filters.FilterArmorStandsSetting;
+import net.purefps.settings.filters.FilterBabiesSetting;
+import net.purefps.settings.filters.FilterBatsSetting;
+import net.purefps.settings.filters.FilterCrystalsSetting;
+import net.purefps.settings.filters.FilterEndermenSetting;
+import net.purefps.settings.filters.FilterFlyingSetting;
+import net.purefps.settings.filters.FilterGolemsSetting;
+import net.purefps.settings.filters.FilterHostileSetting;
+import net.purefps.settings.filters.FilterInvisibleSetting;
+import net.purefps.settings.filters.FilterNamedSetting;
+import net.purefps.settings.filters.FilterNeutralSetting;
+import net.purefps.settings.filters.FilterPassiveSetting;
+import net.purefps.settings.filters.FilterPassiveWaterSetting;
+import net.purefps.settings.filters.FilterPetsSetting;
+import net.purefps.settings.filters.FilterPiglinsSetting;
+import net.purefps.settings.filters.FilterPlayersSetting;
+import net.purefps.settings.filters.FilterShulkerBulletSetting;
+import net.purefps.settings.filters.FilterShulkersSetting;
+import net.purefps.settings.filters.FilterSleepingSetting;
+import net.purefps.settings.filters.FilterSlimesSetting;
+import net.purefps.settings.filters.FilterVillagersSetting;
+import net.purefps.settings.filters.FilterZombiePiglinsSetting;
+import net.purefps.settings.filters.FilterZombieVillagersSetting;
 import net.purefps.util.BlockUtils;
 import net.purefps.util.EntityUtils;
 import net.purefps.util.RotationUtils;
@@ -35,19 +58,19 @@ public final class AimAssistHack extends Hack
 {
 	private final SliderSetting range =
 		new SliderSetting("Range", 4.5, 1, 6, 0.05, ValueDisplay.DECIMAL);
-	
+
 	private final SliderSetting rotationSpeed =
 		new SliderSetting("Rotation Speed", 600, 10, 3600, 10,
 			ValueDisplay.DEGREES.withSuffix("/s"));
-	
+
 	private final SliderSetting fov = new SliderSetting("FOV",
 		"Field Of View - how far away from your crosshair an entity can be before it's ignored.\n"
 			+ "360\u00b0 = aims at entities all around you.",
 		120, 30, 360, 10, ValueDisplay.DEGREES);
-	
+
 	private final CheckboxSetting checkLOS = new CheckboxSetting(
 		"Check line of sight", "Won't aim at entities behind blocks.", true);
-	
+
 	private final EntityFilterList entityFilters =
 		new EntityFilterList(FilterPlayersSetting.genericCombat(false),
 			FilterSleepingSetting.genericCombat(false),
@@ -76,24 +99,24 @@ public final class AimAssistHack extends Hack
 			FilterShulkerBulletSetting.genericCombat(false),
 			FilterArmorStandsSetting.genericCombat(true),
 			FilterCrystalsSetting.genericCombat(true));
-	
+
 	private Entity target;
 	private float nextYaw;
 	private float nextPitch;
-	
+
 	public AimAssistHack()
 	{
 		super("AimAssist");
 		setCategory(Category.COMBAT);
-		
+
 		addSetting(range);
 		addSetting(rotationSpeed);
 		addSetting(fov);
 		addSetting(checkLOS);
-		
+
 		entityFilters.forEach(this::addSetting);
 	}
-	
+
 	@Override
 	protected void onEnable()
 	{
@@ -106,11 +129,11 @@ public final class AimAssistHack extends Hack
 		WURST.getHax().multiAuraHack.setEnabled(false);
 		WURST.getHax().protectHack.setEnabled(false);
 		WURST.getHax().tpAuraHack.setEnabled(false);
-		
+
 		EVENTS.add(UpdateListener.class, this);
 		EVENTS.add(RenderListener.class, this);
 	}
-	
+
 	@Override
 	protected void onDisable()
 	{
@@ -118,68 +141,68 @@ public final class AimAssistHack extends Hack
 		EVENTS.remove(RenderListener.class, this);
 		target = null;
 	}
-	
+
 	@Override
 	public void onUpdate()
 	{
 		// don't aim when a container/inventory screen is open
 		if(MC.currentScreen instanceof HandledScreen)
 			return;
-		
+
 		Stream<Entity> stream = EntityUtils.getAttackableEntities();
 		double rangeSq = Math.pow(range.getValue(), 2);
 		stream = stream.filter(e -> MC.player.squaredDistanceTo(e) <= rangeSq);
-		
+
 		if(fov.getValue() < 360.0)
 			stream = stream.filter(e -> RotationUtils.getAngleToLookVec(
 				e.getBoundingBox().getCenter()) <= fov.getValue() / 2.0);
-		
+
 		stream = entityFilters.applyTo(stream);
-		
+
 		target = stream
 			.min(Comparator.comparingDouble(e -> RotationUtils
 				.getAngleToLookVec(e.getBoundingBox().getCenter())))
 			.orElse(null);
 		if(target == null)
 			return;
-		
+
 		Vec3d hitVec = target.getBoundingBox().getCenter();
 		if(checkLOS.isChecked() && !BlockUtils.hasLineOfSight(hitVec))
 		{
 			target = null;
 			return;
 		}
-		
+
 		WURST.getHax().autoSwordHack.setSlot();
 		faceEntityClient(target);
 	}
-	
+
 	private boolean faceEntityClient(Entity entity)
 	{
 		// get needed rotation
 		Box box = entity.getBoundingBox();
 		Rotation needed = RotationUtils.getNeededRotations(box.getCenter());
-		
+
 		// turn towards center of boundingBox
 		Rotation next = RotationUtils.slowlyTurnTowards(needed,
 			rotationSpeed.getValueI() / 20F);
 		nextYaw = next.getYaw();
 		nextPitch = next.getPitch();
-		
+
 		// check if facing center
 		if(RotationUtils.isAlreadyFacing(needed))
 			return true;
-		
+
 		// if not facing center, check if facing anything in boundingBox
 		return RotationUtils.isFacingBox(box, range.getValue());
 	}
-	
+
 	@Override
 	public void onRender(MatrixStack matrixStack, float partialTicks)
 	{
 		if(target == null)
 			return;
-			
+
 		// Not actually rendering anything, just using this method to rotate
 		// more smoothly.
 		float oldYaw = MC.player.prevYaw;

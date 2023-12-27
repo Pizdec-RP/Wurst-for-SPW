@@ -23,10 +23,10 @@ public final class CrashChestHack extends Hack
 	public CrashChestHack()
 	{
 		super("CrashChest");
-		
+
 		setCategory(Category.ITEMS);
 	}
-	
+
 	@Override
 	public void onEnable()
 	{
@@ -36,14 +36,14 @@ public final class CrashChestHack extends Hack
 			setEnabled(false);
 			return;
 		}
-		
+
 		if(!MC.player.getInventory().getArmorStack(0).isEmpty())
 		{
 			ChatUtils.error("Please clear your shoes slot.");
 			setEnabled(false);
 			return;
 		}
-		
+
 		// generate item
 		ItemStack stack = new ItemStack(Blocks.CHEST);
 		NbtCompound nbtCompound = new NbtCompound();
@@ -53,7 +53,7 @@ public final class CrashChestHack extends Hack
 		nbtCompound.put("www.wurstclient.net", nbtList);
 		stack.setNbt(nbtCompound);
 		stack.setCustomName(Text.literal("Copy Me"));
-		
+
 		// give item
 		MC.player.getInventory().armor.set(0, stack);
 		ChatUtils.message("Item has been placed in your shoes slot.");

@@ -22,40 +22,37 @@ public final class AirPlaceHack extends Hack implements RightClickListener
 {
 	private final SliderSetting range =
 		new SliderSetting("Range", 5, 1, 6, 0.05, ValueDisplay.DECIMAL);
-	
+
 	public AirPlaceHack()
 	{
 		super("AirPlace");
 		setCategory(Category.BLOCKS);
 		addSetting(range);
 	}
-	
+
 	@Override
 	public void onEnable()
 	{
 		EVENTS.add(RightClickListener.class, this);
 	}
-	
+
 	@Override
 	public void onDisable()
 	{
 		EVENTS.remove(RightClickListener.class, this);
 	}
-	
+
 	@Override
 	public void onRightClick(RightClickEvent event)
 	{
 		HitResult hitResult = MC.player.raycast(range.getValue(), 0, false);
-		if(hitResult.getType() != HitResult.Type.MISS)
+		if((hitResult.getType() != HitResult.Type.MISS) || !(hitResult instanceof BlockHitResult blockHitResult))
 			return;
-		
-		if(!(hitResult instanceof BlockHitResult blockHitResult))
-			return;
-		
+
 		MC.itemUseCooldown = 4;
 		if(MC.player.isRiding())
 			return;
-		
+
 		InteractionSimulator.rightClickBlock(blockHitResult);
 		event.cancel();
 	}

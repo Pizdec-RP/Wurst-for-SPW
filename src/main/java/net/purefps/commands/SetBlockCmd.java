@@ -35,29 +35,29 @@ public final class SetBlockCmd extends Command
 			".setblock <feature> <setting> reset",
 			"Example: .setblock Nuker ID dirt");
 	}
-	
+
 	@Override
 	public void call(String[] args) throws CmdException
 	{
 		if(args.length != 3)
 			throw new CmdSyntaxError();
-		
+
 		Feature feature = CmdUtils.findFeature(args[0]);
 		Setting setting = CmdUtils.findSetting(feature, args[1]);
 		BlockSetting blockSetting = getAsBlockSetting(feature, setting);
 		setBlock(blockSetting, args[2]);
 	}
-	
+
 	private BlockSetting getAsBlockSetting(Feature feature, Setting setting)
 		throws CmdError
 	{
 		if(!(setting instanceof BlockSetting))
 			throw new CmdError(feature.getName() + " " + setting.getName()
 				+ " is not a block setting.");
-		
+
 		return (BlockSetting)setting;
 	}
-	
+
 	private void setBlock(BlockSetting setting, String value)
 		throws CmdSyntaxError
 	{
@@ -66,14 +66,14 @@ public final class SetBlockCmd extends Command
 			setting.resetToDefault();
 			return;
 		}
-		
+
 		Block block = getBlockFromNameOrID(value);
 		if(block == null)
 			throw new CmdSyntaxError("\"" + value + "\" is not a valid block.");
-		
+
 		setting.setBlock(block);
 	}
-	
+
 	private Block getBlockFromNameOrID(String nameOrId)
 	{
 		if(MathUtils.isInteger(nameOrId))
@@ -81,15 +81,15 @@ public final class SetBlockCmd extends Command
 			BlockState state = Block.STATE_IDS.get(Integer.parseInt(nameOrId));
 			if(state == null)
 				return null;
-			
+
 			return state.getBlock();
 		}
-		
+
 		try
 		{
 			return Registries.BLOCK.getOrEmpty(new Identifier(nameOrId))
 				.orElse(null);
-			
+
 		}catch(InvalidIdentifierException e)
 		{
 			return null;

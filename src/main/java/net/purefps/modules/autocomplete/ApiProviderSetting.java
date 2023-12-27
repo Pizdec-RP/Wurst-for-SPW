@@ -25,19 +25,19 @@ public final class ApiProviderSetting
 				+ " not send your chat history to any servers.",
 			ApiProvider.values(), ApiProvider.OOBABOOGA);
 	}
-	
+
 	public enum ApiProvider
 	{
 		OPENAI("OpenAI"),
 		OOBABOOGA("oobabooga");
-		
+
 		private final String name;
-		
+
 		private ApiProvider(String name)
 		{
 			this.name = name;
 		}
-		
+
 		@Override
 		public String toString()
 		{

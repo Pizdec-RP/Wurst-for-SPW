@@ -142,9 +142,9 @@ public final class NavigatorMainScreen extends NavigatorScreen
 		// Feature feature = navigatorDisplayList.get(hoveredFeature);
 		// if(feature.getHelpPage().isEmpty())
 		// return;
-		// MiscUtils.openLink("https://www.wurstclient.net/wiki/"
+		// MiscUtils.openLink("https://www.PFPSClient.net/wiki/"
 		// + feature.getHelpPage() + "/");
-		// WurstClient wurst = WurstClient.INSTANCE;
+		// PFPSClient wurst = PFPSClient.INSTANCE;
 		// wurst.navigator.addPreference(feature.getName());
 		// ConfigFiles.NAVIGATOR.save();
 		// }
@@ -189,8 +189,6 @@ public final class NavigatorMainScreen extends NavigatorScreen
 	@Override
 	protected void onUpdate()
 	{
-		searchBar.tick();
-		
 		String newText = searchBar.getText();
 		if(clickTimer == -1 && !newText.equals(lastSearchText))
 		{

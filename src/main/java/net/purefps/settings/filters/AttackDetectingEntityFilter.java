@@ -19,7 +19,7 @@ public abstract class AttackDetectingEntityFilter implements EntityFilter
 {
 	private final Setting setting;
 	private final Supplier<Mode> mode;
-	
+
 	protected AttackDetectingEntityFilter(String name, String description,
 		Mode selected, boolean checked)
 	{
@@ -29,7 +29,7 @@ public abstract class AttackDetectingEntityFilter implements EntityFilter
 				new CheckboxSetting(name, description, checked);
 			setting = cbSetting;
 			mode = () -> cbSetting.isChecked() ? Mode.ON : Mode.OFF;
-			
+
 		}else
 		{
 			EnumSetting<Mode> enumSetting =
@@ -38,42 +38,42 @@ public abstract class AttackDetectingEntityFilter implements EntityFilter
 			mode = () -> enumSetting.getSelected();
 		}
 	}
-	
+
 	public abstract boolean onTest(Entity e);
-	
+
 	public abstract boolean ifCalmTest(Entity e);
-	
+
 	@Override
 	public final boolean test(Entity e)
 	{
 		return mode.get() == Mode.IF_CALM ? ifCalmTest(e) : onTest(e);
 	}
-	
+
 	@Override
 	public final boolean isFilterEnabled()
 	{
 		return mode.get() != Mode.OFF;
 	}
-	
+
 	@Override
 	public final Setting getSetting()
 	{
 		return setting;
 	}
-	
+
 	public enum Mode
 	{
 		ON("On"),
 		IF_CALM("If calm"),
 		OFF("Off");
-		
+
 		private final String name;
-		
+
 		private Mode(String name)
 		{
 			this.name = name;
 		}
-		
+
 		@Override
 		public String toString()
 		{

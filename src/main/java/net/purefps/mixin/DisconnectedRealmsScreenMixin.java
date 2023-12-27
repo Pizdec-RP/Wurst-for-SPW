@@ -30,20 +30,20 @@ public class DisconnectedRealmsScreenMixin extends RealmsScreen
 	@Shadow
 	@Final
 	private Screen parent;
-	
+
 	private DisconnectedRealmsScreenMixin(PFPSClient wurst, Text title)
 	{
 		super(title);
 	}
-	
+
 	@Inject(at = @At("TAIL"), method = "init()V")
 	private void onInit(CallbackInfo ci)
 	{
 		if(!PFPSClient.INSTANCE.isEnabled())
 			return;
-		
+
 		System.out.println("Realms disconnected: " + reason);
-		
+
 		if(ForcedChatReportsScreen.isCausedByNoChatReports(reason))
 			client.setScreen(new ForcedChatReportsScreen(parent));
 	}

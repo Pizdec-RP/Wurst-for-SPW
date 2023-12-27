@@ -17,23 +17,23 @@ public final class PauseAttackOnContainersSetting extends CheckboxSetting
 	public PauseAttackOnContainersSetting(boolean checked)
 	{
 		super("Pause on containers",
-			"description.wurst.setting.generic.pause_attack_on_containers",
+			"description.purefps.setting.generic.pause_attack_on_containers",
 			checked);
 	}
-	
+
 	public PauseAttackOnContainersSetting(String name, String description,
 		boolean checked)
 	{
 		super(name, description, checked);
 	}
-	
+
 	public boolean shouldPause()
 	{
 		if(!isChecked())
 			return false;
-		
+
 		Screen screen = PFPSClient.MC.currentScreen;
-		
+
 		return screen instanceof HandledScreen
 			&& !(screen instanceof AbstractInventoryScreen);
 	}

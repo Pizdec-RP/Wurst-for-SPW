@@ -26,7 +26,7 @@ public abstract class PowderSnowBlockMixin extends Block
 	{
 		super(settings);
 	}
-	
+
 	@Inject(at = @At("HEAD"),
 		method = "canWalkOnPowderSnow(Lnet/minecraft/entity/Entity;)Z",
 		cancellable = true)
@@ -35,7 +35,7 @@ public abstract class PowderSnowBlockMixin extends Block
 	{
 		if(!PFPSClient.INSTANCE.getHax().snowShoeHack.isEnabled())
 			return;
-		
+
 		if(entity == PFPSClient.MC.player)
 			cir.setReturnValue(true);
 	}

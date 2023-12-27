@@ -27,7 +27,7 @@ public class ChunkOcclusionGraphBuilderMixin
 	{
 		SetOpaqueCubeEvent event = new SetOpaqueCubeEvent();
 		EventManager.fire(event);
-		
+
 		if(event.isCancelled())
 			ci.cancel();
 	}

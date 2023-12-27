@@ -52,27 +52,27 @@ public final class PlayerEspHack extends Hack implements UpdateListener,
 {
 	private final EspStyleSetting style =
 		new EspStyleSetting(EspStyle.LINES_AND_BOXES);
-	
+
 	private final EspBoxSizeSetting boxSize = new EspBoxSizeSetting(
 		"\u00a7lAccurate\u00a7r mode shows the exact hitbox of each player.\n"
 			+ "\u00a7lFancy\u00a7r mode shows slightly larger boxes that look better.");
-	
+
 	private final EntityFilterList entityFilters = new EntityFilterList(
 		new FilterSleepingSetting("Won't show sleeping players.", false),
 		new FilterInvisibleSetting("Won't show invisible players.", false));
-	
+
 	private final ArrayList<PlayerEntity> players = new ArrayList<>();
-	
+
 	public PlayerEspHack()
 	{
 		super("PlayerESP");
 		setCategory(Category.RENDER);
-		
+
 		addSetting(style);
 		addSetting(boxSize);
 		entityFilters.forEach(this::addSetting);
 	}
-	
+
 	@Override
 	public void onEnable()
 	{
@@ -80,7 +80,7 @@ public final class PlayerEspHack extends Hack implements UpdateListener,
 		EVENTS.add(CameraTransformViewBobbingListener.class, this);
 		EVENTS.add(RenderListener.class, this);
 	}
-	
+
 	@Override
 	public void onDisable()
 	{
@@ -88,25 +88,25 @@ public final class PlayerEspHack extends Hack implements UpdateListener,
 		EVENTS.remove(CameraTransformViewBobbingListener.class, this);
 		EVENTS.remove(RenderListener.class, this);
 	}
-	
+
 	@Override
 	public void onUpdate()
 	{
 		PlayerEntity player = MC.player;
 		ClientWorld world = MC.world;
-		
+
 		players.clear();
 		Stream<AbstractClientPlayerEntity> stream = world.getPlayers()
 			.parallelStream().filter(e -> !e.isRemoved() && e.getHealth() > 0)
 			.filter(e -> e != player)
 			.filter(e -> !(e instanceof FakePlayerEntity))
 			.filter(e -> Math.abs(e.getY() - MC.player.getY()) <= 1e6);
-		
+
 		stream = entityFilters.applyTo(stream);
-		
+
 		players.addAll(stream.collect(Collectors.toList()));
 	}
-	
+
 	@Override
 	public void onCameraTransformViewBobbing(
 		CameraTransformViewBobbingEvent event)
@@ -114,7 +114,7 @@ public final class PlayerEspHack extends Hack implements UpdateListener,
 		if(style.hasLines())
 			event.cancel();
 	}
-	
+
 	@Override
 	public void onRender(MatrixStack matrixStack, float partialTicks)
 	{
@@ -122,89 +122,89 @@ public final class PlayerEspHack extends Hack implements UpdateListener,
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
-		
+
 		matrixStack.push();
-		
+
 		RegionPos region = RenderUtils.getCameraRegion();
 		RenderUtils.applyRegionalRenderOffset(matrixStack, region);
-		
+
 		// draw boxes
 		if(style.hasBoxes())
 			renderBoxes(matrixStack, partialTicks, region);
-		
+
 		if(style.hasLines())
 			renderTracers(matrixStack, partialTicks, region);
-		
+
 		matrixStack.pop();
-		
+
 		// GL resets
 		RenderSystem.setShaderColor(1, 1, 1, 1);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glDisable(GL11.GL_BLEND);
 	}
-	
+
 	private void renderBoxes(MatrixStack matrixStack, float partialTicks,
 		RegionPos region)
 	{
 		float extraSize = boxSize.getExtraSize();
-		
+
 		for(PlayerEntity e : players)
 		{
 			matrixStack.push();
-			
+
 			Vec3d lerpedPos = EntityUtils.getLerpedPos(e, partialTicks)
 				.subtract(region.toVec3d());
 			matrixStack.translate(lerpedPos.x, lerpedPos.y, lerpedPos.z);
-			
+
 			matrixStack.scale(e.getWidth() + extraSize,
 				e.getHeight() + extraSize, e.getWidth() + extraSize);
-			
+
 			// set color
-			if(WURST.getFriends().contains(e.getEntityName()))
+			if(WURST.getFriends().contains(e.getName().getString()))
 				RenderSystem.setShaderColor(0, 0, 1, 0.5F);
 			else
 			{
 				float f = MC.player.distanceTo(e) / 20F;
 				RenderSystem.setShaderColor(2 - f, f, 0, 0.5F);
 			}
-			
+
 			Box bb = new Box(-0.5, 0, -0.5, 0.5, 1, 0.5);
 			RenderUtils.drawOutlinedBox(bb, matrixStack);
-			
+
 			matrixStack.pop();
 		}
 	}
-	
+
 	private void renderTracers(MatrixStack matrixStack, float partialTicks,
 		RegionPos region)
 	{
 		RenderSystem.setShader(GameRenderer::getPositionColorProgram);
 		RenderSystem.setShaderColor(1, 1, 1, 1);
-		
+
 		Matrix4f matrix = matrixStack.peek().getPositionMatrix();
-		
+
 		Tessellator tessellator = RenderSystem.renderThreadTesselator();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINES,
 			VertexFormats.POSITION_COLOR);
-		
+
 		Vec3d regionVec = region.toVec3d();
 		Vec3d start = RotationUtils.getClientLookVec(partialTicks)
 			.add(RenderUtils.getCameraPos()).subtract(regionVec);
-		
+
 		for(PlayerEntity e : players)
 		{
 			Vec3d end = EntityUtils.getLerpedBox(e, partialTicks).getCenter()
 				.subtract(regionVec);
-			
+
 			float r, g, b;
-			
-			if(WURST.getFriends().contains(e.getEntityName()))
+
+			if(WURST.getFriends().contains(e.getName().getString()))
 			{
 				r = 0;
 				g = 0;
 				b = 1;
-				
+
 			}else
 			{
 				float f = MC.player.distanceTo(e) / 20F;
@@ -212,16 +212,16 @@ public final class PlayerEspHack extends Hack implements UpdateListener,
 				g = MathHelper.clamp(f, 0, 1);
 				b = 0;
 			}
-			
+
 			bufferBuilder
 				.vertex(matrix, (float)start.x, (float)start.y, (float)start.z)
 				.color(r, g, b, 0.5F).next();
-			
+
 			bufferBuilder
 				.vertex(matrix, (float)end.x, (float)end.y, (float)end.z)
 				.color(r, g, b, 0.5F).next();
 		}
-		
+
 		tessellator.draw();
 	}
 }

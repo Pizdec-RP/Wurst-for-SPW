@@ -25,16 +25,16 @@ import net.purefps.PFPSClient;
 public enum EntityUtils
 {
 	;
-	
+
 	protected static final PFPSClient WURST = PFPSClient.INSTANCE;
 	protected static final MinecraftClient MC = PFPSClient.MC;
-	
+
 	public static Stream<Entity> getAttackableEntities()
 	{
 		return StreamSupport.stream(MC.world.getEntities().spliterator(), true)
 			.filter(IS_ATTACKABLE);
 	}
-	
+
 	public static final Predicate<Entity> IS_ATTACKABLE = e -> e != null
 		&& !e.isRemoved()
 		&& (e instanceof LivingEntity && ((LivingEntity)e).getHealth() > 0
@@ -42,17 +42,17 @@ public enum EntityUtils
 			|| e instanceof ShulkerBulletEntity)
 		&& e != MC.player && !(e instanceof FakePlayerEntity)
 		&& !WURST.getFriends().isFriend(e);
-	
+
 	public static Stream<AnimalEntity> getValidAnimals()
 	{
 		return StreamSupport.stream(MC.world.getEntities().spliterator(), true)
 			.filter(AnimalEntity.class::isInstance).map(e -> (AnimalEntity)e)
 			.filter(IS_VALID_ANIMAL);
 	}
-	
+
 	public static final Predicate<AnimalEntity> IS_VALID_ANIMAL =
 		a -> a != null && !a.isRemoved() && a.getHealth() > 0;
-	
+
 	/**
 	 * Interpolates (or "lerps") between the entity's position in the previous
 	 * tick and its position in the current tick to get the exact position where
@@ -69,13 +69,13 @@ public enum EntityUtils
 		// values are no longer updated.
 		if(e.isRemoved())
 			return e.getPos();
-		
+
 		double x = MathHelper.lerp(partialTicks, e.lastRenderX, e.getX());
 		double y = MathHelper.lerp(partialTicks, e.lastRenderY, e.getY());
 		double z = MathHelper.lerp(partialTicks, e.lastRenderZ, e.getZ());
 		return new Vec3d(x, y, z);
 	}
-	
+
 	/**
 	 * Interpolates (or "lerps") between the entity's bounding box in the
 	 * previous tick and its bounding box in the current tick to get the exact
@@ -93,7 +93,7 @@ public enum EntityUtils
 		// values are no longer updated.
 		if(e.isRemoved())
 			return e.getBoundingBox();
-		
+
 		Vec3d offset = getLerpedPos(e, partialTicks).subtract(e.getPos());
 		return e.getBoundingBox().offset(offset);
 	}

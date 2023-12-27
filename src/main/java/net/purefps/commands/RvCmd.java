@@ -19,15 +19,15 @@ public final class RvCmd extends Command
 		super("rv", "Makes RemoteView target a specific entity.",
 			".rv <entity>");
 	}
-	
+
 	@Override
 	public void call(String[] args) throws CmdException
 	{
 		RemoteViewHack remoteView = WURST.getHax().remoteViewHack;
-		
+
 		if(args.length != 1)
 			throw new CmdSyntaxError();
-		
+
 		remoteView.onToggledByCommand(args[0]);
 	}
 }

@@ -21,19 +21,19 @@ public final class AntiEntityPushHack extends Hack
 		super("AntiEntityPush");
 		setCategory(Category.MOVEMENT);
 	}
-	
+
 	@Override
 	protected void onEnable()
 	{
 		EVENTS.add(VelocityFromEntityCollisionListener.class, this);
 	}
-	
+
 	@Override
 	protected void onDisable()
 	{
 		EVENTS.remove(VelocityFromEntityCollisionListener.class, this);
 	}
-	
+
 	@Override
 	public void onVelocityFromEntityCollision(
 		VelocityFromEntityCollisionEvent event)

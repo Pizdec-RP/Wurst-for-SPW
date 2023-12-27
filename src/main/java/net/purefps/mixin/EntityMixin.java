@@ -39,11 +39,11 @@ public abstract class EntityMixin implements Nameable, EntityLike, CommandOutput
 		VelocityFromFluidEvent event =
 			new VelocityFromFluidEvent((Entity)(Object)this);
 		EventManager.fire(event);
-		
+
 		if(!event.isCancelled())
 			entity.setVelocity(velocity);
 	}
-	
+
 	@Inject(at = @At("HEAD"),
 		method = "Lnet/minecraft/entity/Entity;pushAwayFrom(Lnet/minecraft/entity/Entity;)V",
 		cancellable = true)
@@ -52,11 +52,11 @@ public abstract class EntityMixin implements Nameable, EntityLike, CommandOutput
 		VelocityFromEntityCollisionEvent event =
 			new VelocityFromEntityCollisionEvent((Entity)(Object)this);
 		EventManager.fire(event);
-		
+
 		if(event.isCancelled())
 			ci.cancel();
 	}
-	
+
 	/**
 	 * Makes invisible entities render as ghosts if TrueSight is enabled.
 	 */
@@ -69,7 +69,7 @@ public abstract class EntityMixin implements Nameable, EntityLike, CommandOutput
 		// Return early if the entity is not invisible
 		if(!cir.getReturnValueZ())
 			return;
-		
+
 		if(PFPSClient.INSTANCE.getHax().trueSightHack
 			.shouldBeVisible((Entity)(Object)this))
 			cir.setReturnValue(false);

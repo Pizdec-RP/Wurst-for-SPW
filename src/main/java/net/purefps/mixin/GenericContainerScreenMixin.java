@@ -31,89 +31,89 @@ public abstract class GenericContainerScreenMixin
 	@Shadow
 	@Final
 	private int rows;
-	
+
 	private final AutoStealHack autoSteal =
 		PFPSClient.INSTANCE.getHax().autoStealHack;
 	private int mode;
-	
+
 	public GenericContainerScreenMixin(PFPSClient wurst,
 		GenericContainerScreenHandler container,
 		PlayerInventory playerInventory, Text name)
 	{
 		super(container, playerInventory, name);
 	}
-	
+
 	@Override
 	protected void init()
 	{
 		super.init();
-		
+
 		if(!PFPSClient.INSTANCE.isEnabled())
 			return;
-		
+
 		if(autoSteal.areButtonsVisible())
 		{
 			addDrawableChild(ButtonWidget
 				.builder(Text.literal("Steal"), b -> steal())
 				.dimensions(x + backgroundWidth - 108, y + 4, 50, 12).build());
-			
+
 			addDrawableChild(ButtonWidget
 				.builder(Text.literal("Store"), b -> store())
 				.dimensions(x + backgroundWidth - 56, y + 4, 50, 12).build());
 		}
-		
+
 		if(autoSteal.isEnabled())
 			steal();
 	}
-	
+
 	private void steal()
 	{
 		runInThread(() -> shiftClickSlots(0, rows * 9, 1));
 	}
-	
+
 	private void store()
 	{
 		runInThread(() -> shiftClickSlots(rows * 9, rows * 9 + 44, 2));
 	}
-	
+
 	private void runInThread(Runnable r)
 	{
 		new Thread(() -> {
 			try
 			{
 				r.run();
-				
+
 			}catch(Exception e)
 			{
 				e.printStackTrace();
 			}
 		}).start();
 	}
-	
+
 	private void shiftClickSlots(int from, int to, int mode)
 	{
 		this.mode = mode;
-		
+
 		for(int i = from; i < to; i++)
 		{
 			Slot slot = handler.slots.get(i);
 			if(slot.getStack().isEmpty())
 				continue;
-			
+
 			waitForDelay();
 			if(this.mode != mode || client.currentScreen == null)
 				break;
-			
+
 			onMouseClick(slot, slot.id, 0, SlotActionType.QUICK_MOVE);
 		}
 	}
-	
+
 	private void waitForDelay()
 	{
 		try
 		{
 			Thread.sleep(autoSteal.getDelay());
-			
+
 		}catch(InterruptedException e)
 		{
 			throw new RuntimeException(e);

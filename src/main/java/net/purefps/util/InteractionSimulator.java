@@ -27,9 +27,9 @@ import net.purefps.settings.SwingHandSetting.SwingHand;
 public enum InteractionSimulator
 {
 	;
-	
+
 	private static final MinecraftClient MC = PFPSClient.MC;
-	
+
 	/**
 	 * @see #rightClickBlock(BlockHitResult, SwingHand)
 	 */
@@ -37,7 +37,7 @@ public enum InteractionSimulator
 	{
 		rightClickBlock(hitResult, SwingHand.CLIENT);
 	}
-	
+
 	/**
 	 * Right-clicks the block at the given hit result, which may end up placing
 	 * a block, interacting with an existing block, or using an equipped item.
@@ -67,14 +67,11 @@ public enum InteractionSimulator
 		for(Hand hand : Hand.values())
 		{
 			ItemStack stack = MC.player.getStackInHand(hand);
-			if(interactBlockAndSwing(hitResult, swing, hand, stack))
-				return;
-			
-			if(interactItemAndSwing(stack, swing, hand))
+			if(interactBlockAndSwing(hitResult, swing, hand, stack) || interactItemAndSwing(stack, swing, hand))
 				return;
 		}
 	}
-	
+
 	/**
 	 * @see #rightClickBlock(BlockHitResult, Hand, SwingHand)
 	 */
@@ -82,7 +79,7 @@ public enum InteractionSimulator
 	{
 		rightClickBlock(hitResult, hand, SwingHand.CLIENT);
 	}
-	
+
 	/**
 	 * Right-clicks the block at the given hit result, which may end up placing
 	 * a block, interacting with an existing block, or using an equipped item.
@@ -98,10 +95,10 @@ public enum InteractionSimulator
 		ItemStack stack = MC.player.getStackInHand(hand);
 		if(interactBlockAndSwing(hitResult, swing, hand, stack))
 			return;
-		
+
 		interactItemAndSwing(stack, swing, hand);
 	}
-	
+
 	/**
 	 * Calls {@code interactBlock()} and swings the hand if the game would
 	 * normally do that.
@@ -116,20 +113,20 @@ public enum InteractionSimulator
 		int oldCount = stack.getCount();
 		ActionResult result =
 			MC.interactionManager.interactBlock(MC.player, hand, hitResult);
-		
+
 		// swing hand and reset equip animation
 		if(result.shouldSwingHand())
 		{
 			swing.swing(hand);
-			
+
 			if(!stack.isEmpty() && (stack.getCount() != oldCount
 				|| MC.interactionManager.hasCreativeInventory()))
 				MC.gameRenderer.firstPersonRenderer.resetEquipProgress(hand);
 		}
-		
+
 		return result != ActionResult.PASS;
 	}
-	
+
 	/**
 	 * Calls {@code interactItem()} and swings the hand if the game would
 	 * normally do that.
@@ -143,22 +140,22 @@ public enum InteractionSimulator
 		// pass if hand is empty
 		if(stack.isEmpty())
 			return false;
-		
+
 		// call interactItem()
 		ActionResult result =
 			MC.interactionManager.interactItem(MC.player, hand);
-		
+
 		// swing hand
 		if(result.shouldSwingHand())
 			swing.swing(hand);
-		
+
 		// reset equip animation
 		if(result.isAccepted())
 		{
 			MC.gameRenderer.firstPersonRenderer.resetEquipProgress(hand);
 			return true;
 		}
-		
+
 		return false;
 	}
 }

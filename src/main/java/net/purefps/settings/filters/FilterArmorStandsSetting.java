@@ -16,19 +16,19 @@ public final class FilterArmorStandsSetting extends EntityFilterCheckbox
 	{
 		super("Filter armor stands", description, checked);
 	}
-	
+
 	@Override
 	public boolean test(Entity e)
 	{
 		return !(e instanceof ArmorStandEntity);
 	}
-	
+
 	public static FilterArmorStandsSetting genericCombat(boolean checked)
 	{
 		return new FilterArmorStandsSetting("Won't attack armor stands.",
 			checked);
 	}
-	
+
 	public static FilterArmorStandsSetting genericVision(boolean checked)
 	{
 		return new FilterArmorStandsSetting("Won't show armor stands.",

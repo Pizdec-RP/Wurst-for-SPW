@@ -23,11 +23,11 @@ public class SimpleOptionMixin<T> implements ISimpleOption<T>
 {
 	@Shadow
 	T value;
-	
+
 	@Shadow
 	@Final
 	private Consumer<T> changeCallback;
-	
+
 	@Override
 	public void forceSetValue(T newValue)
 	{
@@ -36,7 +36,7 @@ public class SimpleOptionMixin<T> implements ISimpleOption<T>
 			value = newValue;
 			return;
 		}
-		
+
 		if(!Objects.equals(value, newValue))
 		{
 			value = newValue;

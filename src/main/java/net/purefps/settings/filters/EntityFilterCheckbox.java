@@ -19,13 +19,13 @@ public abstract class EntityFilterCheckbox extends CheckboxSetting
 	{
 		super(name, description, checked);
 	}
-	
+
 	@Override
 	public final boolean isFilterEnabled()
 	{
 		return isChecked();
 	}
-	
+
 	@Override
 	public final Setting getSetting()
 	{

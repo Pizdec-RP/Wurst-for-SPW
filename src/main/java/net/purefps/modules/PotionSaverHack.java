@@ -21,29 +21,29 @@ public final class PotionSaverHack extends Hack implements PacketOutputListener
 		super("PotionSaver");
 		setCategory(Category.OTHER);
 	}
-	
+
 	@Override
 	protected void onEnable()
 	{
 		EVENTS.add(PacketOutputListener.class, this);
 	}
-	
+
 	@Override
 	protected void onDisable()
 	{
 		EVENTS.remove(PacketOutputListener.class, this);
 	}
-	
+
 	@Override
 	public void onSentPacket(PacketOutputEvent event)
 	{
 		if(!isFrozen())
 			return;
-		
+
 		if(event.getPacket() instanceof PlayerMoveC2SPacket)
 			event.cancel();
 	}
-	
+
 	public boolean isFrozen()
 	{
 		return isEnabled() && MC.player != null

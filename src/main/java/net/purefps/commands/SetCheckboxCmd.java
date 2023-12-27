@@ -28,29 +28,29 @@ public final class SetCheckboxCmd extends Command
 			".setcheckbox <feature> <setting> (on|off)",
 			".setcheckbox <feature> <setting> toggle");
 	}
-	
+
 	@Override
 	public void call(String[] args) throws CmdException
 	{
 		if(args.length != 3)
 			throw new CmdSyntaxError();
-		
+
 		Feature feature = CmdUtils.findFeature(args[0]);
 		Setting setting = CmdUtils.findSetting(feature, args[1]);
 		CheckboxSetting checkbox = getAsCheckbox(feature, setting);
 		setChecked(checkbox, args[2]);
 	}
-	
+
 	private CheckboxSetting getAsCheckbox(Feature feature, Setting setting)
 		throws CmdError
 	{
 		if(!(setting instanceof CheckboxSetting))
 			throw new CmdError(feature.getName() + " " + setting.getName()
 				+ " is not a checkbox setting.");
-		
+
 		return (CheckboxSetting)setting;
 	}
-	
+
 	private void setChecked(CheckboxSetting checkbox, String value)
 		throws CmdSyntaxError
 	{
@@ -59,15 +59,15 @@ public final class SetCheckboxCmd extends Command
 			case "on":
 			checkbox.setChecked(true);
 			break;
-			
+
 			case "off":
 			checkbox.setChecked(false);
 			break;
-			
+
 			case "toggle":
 			checkbox.setChecked(!checkbox.isChecked());
 			break;
-			
+
 			default:
 			throw new CmdSyntaxError();
 		}

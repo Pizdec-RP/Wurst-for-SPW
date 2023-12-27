@@ -17,6 +17,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.shape.VoxelShape;
@@ -25,30 +26,67 @@ import net.purefps.PFPSClient;
 public enum BlockBreaker
 {
 	;
-	
+
 	private static final PFPSClient WURST = PFPSClient.INSTANCE;
 	private static final MinecraftClient MC = PFPSClient.MC;
-	
+
 	public static boolean breakOneBlock(BlockPos pos)
 	{
 		BlockBreakingParams params = getBlockBreakingParams(pos);
 		if(params == null)
 			return false;
-		
+
 		// face block
-		WURST.getRotationFaker().faceVectorPacket(params.hitVec);
-		
+		RotationUtils.Rotation needed = RotationUtils.getNeededRotations(params.hitVec);
+		float yaw = RotationUtils.limitAngleChange(MC.player.getYaw(), needed.getYaw());
+		float pitch = needed.getPitch();
+		MC.player.setPitch(pitch);
+		MC.player.setYaw(yaw);
+
 		// damage block
 		if(!MC.interactionManager.updateBlockBreakingProgress(pos, params.side))
 			return false;
-		
+
 		// swing arm
 		MC.player.networkHandler
 			.sendPacket(new HandSwingC2SPacket(Hand.MAIN_HAND));
-		
+
 		return true;
 	}
-	
+
+	public static void faceBlock(BlockPos context) {
+    	Vec3d vec3d = MC.player.getEyePos();
+    	Vec3d ff = context.toCenterPos();
+        double d = ff.x - vec3d.x;
+        double e = Math.floor(ff.y - vec3d.y);
+        double f = ff.z - vec3d.z;
+        double g = Math.sqrt(d * d + f * f);
+        MC.player.setPitch(MathHelper.wrapDegrees((float)(-(MathHelper.atan2(e, g) * 57.2957763671875))));
+        MC.player.setYaw(MathHelper.wrapDegrees((float)(MathHelper.atan2(f, d) * 57.2957763671875) - 90.0f));
+        MC.player.setHeadYaw(MC.player.getYaw());
+        MC.player.prevPitch = MC.player.getPitch();
+        MC.player.prevYaw = MC.player.getYaw();
+    }
+
+	public static boolean breakOneBlockLegit(BlockPos pos) {
+		BlockBreakingParams params = getBlockBreakingParams(pos);
+		if(params == null)
+			return false;
+
+		// face block
+		//WURST.getRotationFaker().faceVectorPacket(params.hitVec);
+		faceBlock(pos);
+
+		// damage block
+		if(!MC.interactionManager.updateBlockBreakingProgress(pos, params.side))
+			return false;
+
+		// swing arm
+		MC.player.swingHand(Hand.MAIN_HAND);
+
+		return true;
+	}
+
 	/**
 	 * Returns everything you need to break a block at the given position, such
 	 * as which side to face, the exact hit vector to face that side, the
@@ -59,7 +97,7 @@ public enum BlockBreaker
 	{
 		return getBlockBreakingParams(RotationUtils.getEyesPos(), pos);
 	}
-	
+
 	/**
 	 * Returns everything you need to break a block at the given position, such
 	 * as which side to face, the exact hit vector to face that side, the
@@ -70,17 +108,17 @@ public enum BlockBreaker
 		BlockPos pos)
 	{
 		Direction[] sides = Direction.values();
-		
+
 		BlockState state = BlockUtils.getState(pos);
 		VoxelShape shape = state.getOutlineShape(MC.world, pos);
 		if(shape.isEmpty())
 			return null;
-		
+
 		Box box = shape.getBoundingBox();
 		Vec3d halfSize = new Vec3d(box.maxX - box.minX, box.maxY - box.minY,
 			box.maxZ - box.minZ).multiply(0.5);
 		Vec3d center = Vec3d.of(pos).add(box.getCenter());
-		
+
 		Vec3d[] hitVecs = new Vec3d[sides.length];
 		for(int i = 0; i < sides.length; i++)
 		{
@@ -89,76 +127,76 @@ public enum BlockBreaker
 				halfSize.y * dirVec.getY(), halfSize.z * dirVec.getZ());
 			hitVecs[i] = center.add(relHitVec);
 		}
-		
+
 		double distanceSqToCenter = eyes.squaredDistanceTo(center);
 		double[] distancesSq = new double[sides.length];
 		boolean[] linesOfSight = new boolean[sides.length];
-		
+
 		for(int i = 0; i < sides.length; i++)
 		{
 			distancesSq[i] = eyes.squaredDistanceTo(hitVecs[i]);
-			
+
 			// no need to raytrace the rear sides,
 			// they can't possibly have line of sight
 			if(distancesSq[i] >= distanceSqToCenter)
 				continue;
-			
+
 			linesOfSight[i] = BlockUtils.hasLineOfSight(eyes, hitVecs[i]);
 		}
-		
+
 		Direction side = sides[0];
 		for(int i = 1; i < sides.length; i++)
 		{
 			int bestSide = side.ordinal();
-			
+
 			// prefer sides with LOS
 			if(!linesOfSight[bestSide] && linesOfSight[i])
 			{
 				side = sides[i];
 				continue;
 			}
-			
+
 			if(linesOfSight[bestSide] && !linesOfSight[i])
 				continue;
-			
+
 			// then pick the closest side
 			if(distancesSq[i] < distancesSq[bestSide])
 				side = sides[i];
 		}
-		
+
 		return new BlockBreakingParams(side, hitVecs[side.ordinal()],
 			distancesSq[side.ordinal()], linesOfSight[side.ordinal()]);
 	}
-	
+
 	public static record BlockBreakingParams(Direction side, Vec3d hitVec,
 		double distanceSq, boolean lineOfSight)
 	{}
-	
+
 	public static void breakBlocksWithPacketSpam(Iterable<BlockPos> blocks)
 	{
 		Vec3d eyesPos = RotationUtils.getEyesPos();
 		ClientPlayNetworkHandler netHandler = MC.player.networkHandler;
-		
+
 		for(BlockPos pos : blocks)
 		{
 			Vec3d posVec = Vec3d.ofCenter(pos);
 			double distanceSqPosVec = eyesPos.squaredDistanceTo(posVec);
-			
+
 			for(Direction side : Direction.values())
 			{
 				Vec3d hitVec =
 					posVec.add(Vec3d.of(side.getVector()).multiply(0.5));
-				
+
 				// check if side is facing towards player
 				if(eyesPos.squaredDistanceTo(hitVec) >= distanceSqPosVec)
 					continue;
-				
+
 				// break block
 				netHandler.sendPacket(new PlayerActionC2SPacket(
 					Action.START_DESTROY_BLOCK, pos, side));
 				netHandler.sendPacket(new PlayerActionC2SPacket(
 					Action.STOP_DESTROY_BLOCK, pos, side));
-				
+
 				break;
 			}
 		}

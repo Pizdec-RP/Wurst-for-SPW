@@ -30,7 +30,7 @@ public class InGameOverlayRendererMixin
 		return original - PFPSClient.INSTANCE.getHax().noFireOverlayHack
 			.getOverlayOffset();
 	}
-	
+
 	@Inject(at = @At("HEAD"),
 		method = "renderUnderwaterOverlay(Lnet/minecraft/client/MinecraftClient;Lnet/minecraft/client/util/math/MatrixStack;)V",
 		cancellable = true)

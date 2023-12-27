@@ -13,7 +13,7 @@ public final class LoginException extends Exception
 	{
 		super(message, cause);
 	}
-	
+
 	public LoginException(String message)
 	{
 		super(message);

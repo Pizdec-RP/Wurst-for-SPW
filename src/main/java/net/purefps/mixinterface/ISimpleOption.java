@@ -16,7 +16,7 @@ public interface ISimpleOption<T>
 	 * outside of the normal range.
 	 */
 	public void forceSetValue(T newValue);
-	
+
 	/**
 	 * Returns the given SimpleOption object as an ISimpleOption, allowing you
 	 * to access the forceSetValue() method.

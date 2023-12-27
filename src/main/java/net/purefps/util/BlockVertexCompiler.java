@@ -25,13 +25,13 @@ import net.purefps.modules.SearchHack;
 public enum BlockVertexCompiler
 {
 	;
-	
+
 	public static ArrayList<int[]> compile(HashSet<BlockPos> blocks)
 	{
 		return blocks.parallelStream().flatMap(pos -> getVertices(pos, blocks))
 			.collect(Collectors.toCollection(ArrayList::new));
 	}
-	
+
 	public static ArrayList<int[]> compile(HashSet<BlockPos> blocks,
 		RegionPos region)
 	{
@@ -39,19 +39,19 @@ public enum BlockVertexCompiler
 			.map(v -> applyRegionOffset(v, region))
 			.collect(Collectors.toCollection(ArrayList::new));
 	}
-	
+
 	private static int[] applyRegionOffset(int[] vertex, RegionPos region)
 	{
 		vertex[0] -= region.x();
 		vertex[2] -= region.z();
 		return vertex;
 	}
-	
+
 	private static Stream<int[]> getVertices(BlockPos pos,
 		HashSet<BlockPos> matchingBlocks)
 	{
 		Builder<int[]> builder = Stream.<int[]> builder();
-		
+
 		if(!matchingBlocks.contains(pos.down()))
 		{
 			builder.accept(getVertex(pos, 0, 0, 0));
@@ -59,7 +59,7 @@ public enum BlockVertexCompiler
 			builder.accept(getVertex(pos, 1, 0, 1));
 			builder.accept(getVertex(pos, 0, 0, 1));
 		}
-		
+
 		if(!matchingBlocks.contains(pos.up()))
 		{
 			builder.accept(getVertex(pos, 0, 1, 0));
@@ -67,7 +67,7 @@ public enum BlockVertexCompiler
 			builder.accept(getVertex(pos, 1, 1, 1));
 			builder.accept(getVertex(pos, 1, 1, 0));
 		}
-		
+
 		if(!matchingBlocks.contains(pos.north()))
 		{
 			builder.accept(getVertex(pos, 0, 0, 0));
@@ -75,7 +75,7 @@ public enum BlockVertexCompiler
 			builder.accept(getVertex(pos, 1, 1, 0));
 			builder.accept(getVertex(pos, 1, 0, 0));
 		}
-		
+
 		if(!matchingBlocks.contains(pos.east()))
 		{
 			builder.accept(getVertex(pos, 1, 0, 0));
@@ -83,7 +83,7 @@ public enum BlockVertexCompiler
 			builder.accept(getVertex(pos, 1, 1, 1));
 			builder.accept(getVertex(pos, 1, 0, 1));
 		}
-		
+
 		if(!matchingBlocks.contains(pos.south()))
 		{
 			builder.accept(getVertex(pos, 0, 0, 1));
@@ -91,7 +91,7 @@ public enum BlockVertexCompiler
 			builder.accept(getVertex(pos, 1, 1, 1));
 			builder.accept(getVertex(pos, 0, 1, 1));
 		}
-		
+
 		if(!matchingBlocks.contains(pos.west()))
 		{
 			builder.accept(getVertex(pos, 0, 0, 0));
@@ -99,10 +99,10 @@ public enum BlockVertexCompiler
 			builder.accept(getVertex(pos, 0, 1, 1));
 			builder.accept(getVertex(pos, 0, 1, 0));
 		}
-		
+
 		return builder.build();
 	}
-	
+
 	private static int[] getVertex(BlockPos pos, int x, int y, int z)
 	{
 		return new int[]{pos.getX() + x, pos.getY() + y, pos.getZ() + z};

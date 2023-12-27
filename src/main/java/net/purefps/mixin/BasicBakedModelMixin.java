@@ -38,10 +38,10 @@ public class BasicBakedModelMixin
 		if(face != null || state == null
 			|| !PFPSClient.INSTANCE.getHax().xRayHack.isEnabled())
 			return;
-		
+
 		ShouldDrawSideEvent event = new ShouldDrawSideEvent(state, null);
 		EventManager.fire(event);
-		
+
 		if(Boolean.FALSE.equals(event.isRendered()))
 			cir.setReturnValue(List.of());
 	}

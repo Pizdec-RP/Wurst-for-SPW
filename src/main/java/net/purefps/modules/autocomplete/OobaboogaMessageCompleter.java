@@ -25,7 +25,7 @@ public final class OobaboogaMessageCompleter extends MessageCompleter
 	{
 		super(modelSettings);
 	}
-	
+
 	@Override
 	protected JsonObject buildParams(String prompt)
 	{
@@ -44,7 +44,7 @@ public final class OobaboogaMessageCompleter extends MessageCompleter
 		params.add("stopping_strings", stoppingStrings);
 		return params;
 	}
-	
+
 	@Override
 	protected WsonObject requestCompletion(JsonObject parameters)
 		throws IOException, JsonException
@@ -54,7 +54,7 @@ public final class OobaboogaMessageCompleter extends MessageCompleter
 		HttpURLConnection conn = (HttpURLConnection)url.openConnection();
 		conn.setRequestMethod("POST");
 		conn.setRequestProperty("Content-Type", "application/json");
-		
+
 		// set the request body
 		conn.setDoOutput(true);
 		try(OutputStream os = conn.getOutputStream())
@@ -62,21 +62,21 @@ public final class OobaboogaMessageCompleter extends MessageCompleter
 			os.write(JsonUtils.GSON.toJson(parameters).getBytes());
 			os.flush();
 		}
-		
+
 		// parse the response
 		return JsonUtils.parseConnectionToObject(conn);
 	}
-	
+
 	@Override
 	protected String extractCompletion(WsonObject response) throws JsonException
 	{
 		// extract completion from response
 		String completion =
 			response.getArray("results").getObject(0).getString("text");
-		
+
 		// remove newlines
 		completion = completion.replace("\n", " ");
-		
+
 		return completion;
 	}
 }

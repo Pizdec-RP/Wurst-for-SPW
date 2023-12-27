@@ -37,14 +37,14 @@ import net.purefps.util.EntityUtils;
 public final class RadarComponent extends Component
 {
 	private final RadarHack hack;
-	
+
 	public RadarComponent(RadarHack hack)
 	{
 		this.hack = hack;
 		setWidth(getDefaultWidth());
 		setHeight(getDefaultHeight());
 	}
-	
+
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY,
 		float partialTicks)
@@ -53,28 +53,28 @@ public final class RadarComponent extends Component
 		float[] bgColor = gui.getBgColor();
 		float[] acColor = gui.getAcColor();
 		float opacity = gui.getOpacity();
-		
+
 		int x1 = getX();
 		int x2 = x1 + getWidth();
 		int y1 = getY();
 		int y2 = y1 + getHeight();
-		
+
 		int scroll = getParent().isScrollingEnabled()
 			? getParent().getScrollOffset() : 0;
 		boolean hovering = mouseX >= x1 && mouseY >= y1 && mouseX < x2
 			&& mouseY < y2 && mouseY >= -scroll
 			&& mouseY < getParent().getHeight() - 13 - scroll;
-		
+
 		MatrixStack matrixStack = context.getMatrices();
 		Matrix4f matrix = matrixStack.peek().getPositionMatrix();
 		Tessellator tessellator = RenderSystem.renderThreadTesselator();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		RenderSystem.setShader(GameRenderer::getPositionProgram);
-		
+
 		// tooltip
 		if(hovering)
 			gui.setTooltip("");
-		
+
 		// background
 		RenderSystem.setShaderColor(bgColor[0], bgColor[1], bgColor[2],
 			opacity);
@@ -85,26 +85,26 @@ public final class RadarComponent extends Component
 		bufferBuilder.vertex(matrix, x2, y2, 0).next();
 		bufferBuilder.vertex(matrix, x2, y1, 0).next();
 		tessellator.draw();
-		
+
 		float middleX = (x1 + x2) / 2.0F;
 		float middleY = (y1 + y2) / 2.0F;
-		
+
 		matrixStack.push();
 		matrixStack.translate(middleX, middleY, 0);
 		matrix = matrixStack.peek().getPositionMatrix();
-		
+
 		ClientPlayerEntity player = PFPSClient.MC.player;
 		if(!hack.isRotateEnabled())
 			matrixStack.multiply(new Quaternionf().rotationZ(
 				(180 + player.getYaw()) * MathHelper.RADIANS_PER_DEGREE));
-		
+
 		float xa1 = 0;
 		float xa2 = 2;
 		float xa3 = -2;
 		float ya1 = -2;
 		float ya2 = 2;
 		float ya3 = 1;
-		
+
 		// arrow
 		RenderSystem.setShaderColor(acColor[0], acColor[1], acColor[2],
 			opacity);
@@ -115,7 +115,7 @@ public final class RadarComponent extends Component
 		bufferBuilder.vertex(matrix, xa1, ya3, 0).next();
 		bufferBuilder.vertex(matrix, xa3, ya2, 0).next();
 		tessellator.draw();
-		
+
 		// outline
 		RenderSystem.setShaderColor(0.0625F, 0.0625F, 0.0625F, 0.5F);
 		bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINE_STRIP,
@@ -126,11 +126,11 @@ public final class RadarComponent extends Component
 		bufferBuilder.vertex(matrix, xa3, ya2, 0).next();
 		bufferBuilder.vertex(matrix, xa1, ya1, 0).next();
 		tessellator.draw();
-		
+
 		matrixStack.pop();
 		matrix = matrixStack.peek().getPositionMatrix();
 		Vec3d lerpedPlayerPos = EntityUtils.getLerpedPos(player, partialTicks);
-		
+
 		// points
 		RenderSystem.setShader(GameRenderer::getPositionColorProgram);
 		RenderSystem.setShaderColor(1, 1, 1, 1);
@@ -151,11 +151,11 @@ public final class RadarComponent extends Component
 				angle = Math.toRadians(180 - neededRotation - 90);
 			double renderX = Math.sin(angle) * distance;
 			double renderY = Math.cos(angle) * distance;
-			
+
 			if(Math.abs(renderX) > getWidth() / 2.0
 				|| Math.abs(renderY) > getHeight() / 2.0)
 				continue;
-			
+
 			int color;
 			if(PFPSClient.INSTANCE.getFriends().isFriend(e))
 				color = 0x0000FF;
@@ -168,7 +168,7 @@ public final class RadarComponent extends Component
 				color = 0x00FF00;
 			else
 				color = 0x808080;
-			
+
 			float red = (color >> 16 & 255) / 255F;
 			float green = (color >> 8 & 255) / 255F;
 			float blue = (color & 255) / 255F;
@@ -192,13 +192,13 @@ public final class RadarComponent extends Component
 		}
 		tessellator.draw();
 	}
-	
+
 	@Override
 	public int getDefaultWidth()
 	{
 		return 96;
 	}
-	
+
 	@Override
 	public int getDefaultHeight()
 	{

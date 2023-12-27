@@ -30,40 +30,40 @@ public final class NewChunksOutlineRenderer implements NewChunksChunkRenderer
 	{
 		Tessellator tessellator = RenderSystem.renderThreadTesselator();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
-		
+
 		bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINES,
 			VertexFormats.POSITION);
 		renderChunks(new ArrayList<>(chunks), drawDistance, bufferBuilder);
 		return bufferBuilder.end();
 	}
-	
+
 	private void renderChunks(List<ChunkPos> chunks, int drawDistance,
 		BufferBuilder bufferBuilder)
 	{
 		ChunkPos camChunkPos = new ChunkPos(RenderUtils.getCameraBlockPos());
 		RegionPos region = RegionPos.of(camChunkPos);
-		
+
 		for(ChunkPos chunkPos : chunks)
 		{
 			if(chunkPos.getChebyshevDistance(camChunkPos) > drawDistance)
 				continue;
-			
+
 			BlockPos blockPos =
 				chunkPos.getBlockPos(-region.x(), 0, -region.z());
 			float x1 = blockPos.getX() + 0.5F;
 			float x2 = x1 + 15;
 			float z1 = blockPos.getZ() + 0.5F;
 			float z2 = z1 + 15;
-			
+
 			bufferBuilder.vertex(x1, 0, z1).next();
 			bufferBuilder.vertex(x2, 0, z1).next();
-			
+
 			bufferBuilder.vertex(x2, 0, z1).next();
 			bufferBuilder.vertex(x2, 0, z2).next();
-			
+
 			bufferBuilder.vertex(x2, 0, z2).next();
 			bufferBuilder.vertex(x1, 0, z2).next();
-			
+
 			bufferBuilder.vertex(x1, 0, z2).next();
 			bufferBuilder.vertex(x1, 0, z1).next();
 		}

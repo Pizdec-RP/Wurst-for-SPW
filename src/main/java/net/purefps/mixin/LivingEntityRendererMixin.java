@@ -33,10 +33,10 @@ public abstract class LivingEntityRendererMixin
 		// pretend the distance is 1 so the check always passes
 		if(PFPSClient.INSTANCE.getHax().nameTagsHack.isUnlimitedRange())
 			return 1;
-		
+
 		return render.getSquaredDistanceToCamera(entity);
 	}
-	
+
 	/**
 	 * Forces the nametag to be rendered if configured in NameTags.
 	 */

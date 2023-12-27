@@ -28,31 +28,32 @@ import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Uuids;
+import net.minecraft.client.util.SkinTextures;
 
 public final class AltRenderer
 {
 	private static final HashMap<String, Identifier> loadedSkins =
 		new HashMap<>();
-	
+
 	private static void bindSkinTexture(String name)
 	{
 		if(name.isEmpty())
 			name = "Steve";
-		
+
 		if(loadedSkins.get(name) == null)
 		{
 			UUID uuid =
-				Uuids.getUuidFromProfile(new GameProfile((UUID)null, name));
-			
+				Uuids.getOfflinePlayerUuid(name);
+
 			PlayerListEntry entry =
 				new PlayerListEntry(new GameProfile(uuid, name), false);
-			
-			loadedSkins.put(name, entry.getSkinTexture());
+
+			loadedSkins.put(name, entry.getSkinTextures().texture());
 		}
-		
+
 		RenderSystem.setShaderTexture(0, loadedSkins.get(name));
 	}
-	
+
 	private static void drawTexture(DrawContext context, int x, int y, float u,
 		float v, int w, int h, int fw, int fh)
 	{
@@ -63,7 +64,7 @@ public final class AltRenderer
 		float uPlusWOverFw = (u + w) / fw;
 		float vOverFh = v / fh;
 		float vPlusHOverFh = (v + h) / fh;
-		
+
 		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 		MatrixStack matrixStack = context.getMatrices();
 		Matrix4f matrix4f = matrixStack.peek().getPositionMatrix();
@@ -80,7 +81,7 @@ public final class AltRenderer
 			.next();
 		BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
 	}
-	
+
 	public static void drawAltFace(DrawContext context, String name, int x,
 		int y, int w, int h, boolean selected)
 	{
@@ -88,47 +89,48 @@ public final class AltRenderer
 		{
 			bindSkinTexture(name);
 			GL11.glEnable(GL11.GL_BLEND);
-			
+
 			if(selected)
 				RenderSystem.setShaderColor(1, 1, 1, 1);
 			else
 				RenderSystem.setShaderColor(0.9F, 0.9F, 0.9F, 1);
-			
+
 			// Face
 			int fw = 192;
 			int fh = 192;
 			float u = 24;
 			float v = 24;
 			drawTexture(context, x, y, u, v, w, h, fw, fh);
-			
+
 			// Hat
 			fw = 192;
 			fh = 192;
 			u = 120;
 			v = 24;
 			drawTexture(context, x, y, u, v, w, h, fw, fh);
-			
+
 			GL11.glDisable(GL11.GL_BLEND);
-			
+
 		}catch(Exception e)
 		{
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static void drawAltBody(DrawContext context, String name, int x,
 		int y, int width, int height)
 	{
 		try
 		{
 			bindSkinTexture(name);
-			
+
 			boolean slim = DefaultSkinHelper
-				.getModel(Uuids.getOfflinePlayerUuid(name)).equals("slim");
-			
+					.getSkinTextures(Uuids.getOfflinePlayerUuid(name))
+					.model() == SkinTextures.Model.SLIM;
+
 			GL11.glEnable(GL11.GL_BLEND);
 			RenderSystem.setShaderColor(1, 1, 1, 1);
-			
+
 			// Face
 			x = x + width / 4;
 			y = y + 0;
@@ -139,7 +141,7 @@ public final class AltRenderer
 			float u = height / 4;
 			float v = height / 4;
 			drawTexture(context, x, y, u, v, w, h, fw, fh);
-			
+
 			// Hat
 			x = x + 0;
 			y = y + 0;
@@ -148,7 +150,7 @@ public final class AltRenderer
 			u = height / 4 * 5;
 			v = height / 4;
 			drawTexture(context, x, y, u, v, w, h, fw, fh);
-			
+
 			// Chest
 			x = x + 0;
 			y = y + height / 4;
@@ -157,7 +159,7 @@ public final class AltRenderer
 			u = height / 4 * 2.5F;
 			v = height / 4 * 2.5F;
 			drawTexture(context, x, y, u, v, w, h, fw, fh);
-			
+
 			// Jacket
 			x = x + 0;
 			y = y + 0;
@@ -166,7 +168,7 @@ public final class AltRenderer
 			u = height / 4 * 2.5F;
 			v = height / 4 * 4.5F;
 			drawTexture(context, x, y, u, v, w, h, fw, fh);
-			
+
 			// Left Arm
 			x = x - width / 16 * (slim ? 3 : 4);
 			y = y + (slim ? height / 32 : 0);
@@ -175,7 +177,7 @@ public final class AltRenderer
 			u = height / 4 * 5.5F;
 			v = height / 4 * 2.5F;
 			drawTexture(context, x, y, u, v, w, h, fw, fh);
-			
+
 			// Left Sleeve
 			x = x + 0;
 			y = y + 0;
@@ -184,7 +186,7 @@ public final class AltRenderer
 			u = height / 4 * 5.5F;
 			v = height / 4 * 4.5F;
 			drawTexture(context, x, y, u, v, w, h, fw, fh);
-			
+
 			// Right Arm
 			x = x + width / 16 * (slim ? 11 : 12);
 			y = y + 0;
@@ -193,7 +195,7 @@ public final class AltRenderer
 			u = height / 4 * 5.5F;
 			v = height / 4 * 2.5F;
 			drawTexture(context, x, y, u, v, w, h, fw, fh);
-			
+
 			// Right Sleeve
 			x = x + 0;
 			y = y + 0;
@@ -202,7 +204,7 @@ public final class AltRenderer
 			u = height / 4 * 5.5F;
 			v = height / 4 * 4.5F;
 			drawTexture(context, x, y, u, v, w, h, fw, fh);
-			
+
 			// Left Leg
 			x = x - width / 2;
 			y = y + height / 32 * (slim ? 11 : 12);
@@ -211,7 +213,7 @@ public final class AltRenderer
 			u = height / 4 * 0.5F;
 			v = height / 4 * 2.5F;
 			drawTexture(context, x, y, u, v, w, h, fw, fh);
-			
+
 			// Left Pants
 			x = x + 0;
 			y = y + 0;
@@ -220,7 +222,7 @@ public final class AltRenderer
 			u = height / 4 * 0.5F;
 			v = height / 4 * 4.5F;
 			drawTexture(context, x, y, u, v, w, h, fw, fh);
-			
+
 			// Right Leg
 			x = x + width / 4;
 			y = y + 0;
@@ -229,7 +231,7 @@ public final class AltRenderer
 			u = height / 4 * 0.5F;
 			v = height / 4 * 2.5F;
 			drawTexture(context, x, y, u, v, w, h, fw, fh);
-			
+
 			// Right Pants
 			x = x + 0;
 			y = y + 0;
@@ -238,28 +240,29 @@ public final class AltRenderer
 			u = height / 4 * 0.5F;
 			v = height / 4 * 4.5F;
 			drawTexture(context, x, y, u, v, w, h, fw, fh);
-			
+
 			GL11.glDisable(GL11.GL_BLEND);
-			
+
 		}catch(Exception e)
 		{
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static void drawAltBack(DrawContext context, String name, int x,
 		int y, int width, int height)
 	{
 		try
 		{
 			bindSkinTexture(name);
-			
+
 			boolean slim = DefaultSkinHelper
-				.getModel(Uuids.getOfflinePlayerUuid(name)).equals("slim");
-			
+					.getSkinTextures(Uuids.getOfflinePlayerUuid(name))
+					.model() == SkinTextures.Model.SLIM;
+
 			GL11.glEnable(GL11.GL_BLEND);
 			RenderSystem.setShaderColor(1, 1, 1, 1);
-			
+
 			// Face
 			x = x + width / 4;
 			y = y + 0;
@@ -270,7 +273,7 @@ public final class AltRenderer
 			float u = height / 4 * 3;
 			float v = height / 4;
 			drawTexture(context, x, y, u, v, w, h, fw, fh);
-			
+
 			// Hat
 			x = x + 0;
 			y = y + 0;
@@ -279,7 +282,7 @@ public final class AltRenderer
 			u = height / 4 * 7;
 			v = height / 4;
 			drawTexture(context, x, y, u, v, w, h, fw, fh);
-			
+
 			// Chest
 			x = x + 0;
 			y = y + height / 4;
@@ -288,7 +291,7 @@ public final class AltRenderer
 			u = height / 4 * 4;
 			v = height / 4 * 2.5F;
 			drawTexture(context, x, y, u, v, w, h, fw, fh);
-			
+
 			// Jacket
 			x = x + 0;
 			y = y + 0;
@@ -297,7 +300,7 @@ public final class AltRenderer
 			u = height / 4 * 4;
 			v = height / 4 * 4.5F;
 			drawTexture(context, x, y, u, v, w, h, fw, fh);
-			
+
 			// Left Arm
 			x = x - width / 16 * (slim ? 3 : 4);
 			y = y + (slim ? height / 32 : 0);
@@ -306,7 +309,7 @@ public final class AltRenderer
 			u = height / 4 * (slim ? 6.375F : 6.5F);
 			v = height / 4 * 2.5F;
 			drawTexture(context, x, y, u, v, w, h, fw, fh);
-			
+
 			// Left Sleeve
 			x = x + 0;
 			y = y + 0;
@@ -315,7 +318,7 @@ public final class AltRenderer
 			u = height / 4 * (slim ? 6.375F : 6.5F);
 			v = height / 4 * 4.5F;
 			drawTexture(context, x, y, u, v, w, h, fw, fh);
-			
+
 			// Right Arm
 			x = x + width / 16 * (slim ? 11 : 12);
 			y = y + 0;
@@ -324,7 +327,7 @@ public final class AltRenderer
 			u = height / 4 * (slim ? 6.375F : 6.5F);
 			v = height / 4 * 2.5F;
 			drawTexture(context, x, y, u, v, w, h, fw, fh);
-			
+
 			// Right Sleeve
 			x = x + 0;
 			y = y + 0;
@@ -333,7 +336,7 @@ public final class AltRenderer
 			u = height / 4 * (slim ? 6.375F : 6.5F);
 			v = height / 4 * 4.5F;
 			drawTexture(context, x, y, u, v, w, h, fw, fh);
-			
+
 			// Left Leg
 			x = x - width / 2;
 			y = y + height / 32 * (slim ? 11 : 12);
@@ -342,7 +345,7 @@ public final class AltRenderer
 			u = height / 4 * 1.5F;
 			v = height / 4 * 2.5F;
 			drawTexture(context, x, y, u, v, w, h, fw, fh);
-			
+
 			// Left Pants
 			x = x + 0;
 			y = y + 0;
@@ -351,7 +354,7 @@ public final class AltRenderer
 			u = height / 4 * 1.5F;
 			v = height / 4 * 4.5F;
 			drawTexture(context, x, y, u, v, w, h, fw, fh);
-			
+
 			// Right Leg
 			x = x + width / 4;
 			y = y + 0;
@@ -360,7 +363,7 @@ public final class AltRenderer
 			u = height / 4 * 1.5F;
 			v = height / 4 * 2.5F;
 			drawTexture(context, x, y, u, v, w, h, fw, fh);
-			
+
 			// Right Pants
 			x = x + 0;
 			y = y + 0;
@@ -369,9 +372,9 @@ public final class AltRenderer
 			u = height / 4 * 1.5F;
 			v = height / 4 * 4.5F;
 			drawTexture(context, x, y, u, v, w, h, fw, fh);
-			
+
 			GL11.glDisable(GL11.GL_BLEND);
-			
+
 		}catch(Exception e)
 		{
 			e.printStackTrace();

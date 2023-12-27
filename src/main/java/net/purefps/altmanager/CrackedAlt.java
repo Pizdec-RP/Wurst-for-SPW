@@ -14,7 +14,7 @@ import com.google.gson.JsonObject;
 public final class CrackedAlt extends Alt
 {
 	private final String name;
-	
+
 	/**
 	 * @param name
 	 *            The Alt's name. Cannot be null or empty.
@@ -23,7 +23,7 @@ public final class CrackedAlt extends Alt
 	{
 		this(name, false);
 	}
-	
+
 	/**
 	 * @param name
 	 *            The Alt's name. Cannot be null or empty.
@@ -33,13 +33,13 @@ public final class CrackedAlt extends Alt
 	public CrackedAlt(String name, boolean favorite)
 	{
 		super(favorite);
-		
+
 		if(name == null || name.isEmpty())
 			throw new IllegalArgumentException();
-		
+
 		this.name = name;
 	}
-	
+
 	/**
 	 * Changes the user's cracked name. Happens instantly, cannot fail and does
 	 * not trigger any changes that would need to be saved.
@@ -49,7 +49,7 @@ public final class CrackedAlt extends Alt
 	{
 		LoginManager.changeCrackedName(name);
 	}
-	
+
 	@Override
 	public void exportAsJson(JsonObject json)
 	{
@@ -57,40 +57,40 @@ public final class CrackedAlt extends Alt
 		jsonAlt.addProperty("starred", isFavorite());
 		json.add(name, jsonAlt);
 	}
-	
+
 	@Override
 	public String exportAsTXT()
 	{
 		return name;
 	}
-	
+
 	@Override
 	public String getName()
 	{
 		return name;
 	}
-	
+
 	@Override
 	public String getDisplayName()
 	{
 		return name;
 	}
-	
+
 	@Override
 	public int hashCode()
 	{
 		return Objects.hash(name);
 	}
-	
+
 	@Override
 	public boolean equals(Object obj)
 	{
 		if(this == obj)
 			return true;
-		
+
 		if(!(obj instanceof CrackedAlt))
 			return false;
-		
+
 		CrackedAlt other = (CrackedAlt)obj;
 		return Objects.equals(name, other.name);
 	}

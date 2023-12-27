@@ -30,7 +30,7 @@ public abstract class CreativeInventoryScreenMixin
 	{
 		super(screenHandler, inventory, title);
 	}
-	
+
 	@Inject(at = @At("HEAD"),
 		method = "shouldShowOperatorTab(Lnet/minecraft/entity/player/PlayerEntity;)Z",
 		cancellable = true)

@@ -31,14 +31,14 @@ public final class GoToCmd extends Command
 	private PathFinder pathFinder;
 	private PathProcessor processor;
 	private boolean enabled;
-	
+
 	public GoToCmd()
 	{
 		super("goto", "Walks or flies you to a specific location.",
 			".goto <x> <y> <z>", ".goto <entity>", ".goto -path",
 			"Turn off: .goto");
 	}
-	
+
 	@Override
 	public void call(String[] args) throws CmdException
 	{
@@ -46,11 +46,11 @@ public final class GoToCmd extends Command
 		if(enabled)
 		{
 			disable();
-			
+
 			if(args.length == 0)
 				return;
 		}
-		
+
 		// set PathFinder
 		if(args.length == 1 && args[0].equals("-path"))
 		{
@@ -63,28 +63,28 @@ public final class GoToCmd extends Command
 			BlockPos goal = argsToPos(args);
 			pathFinder = new PathFinder(goal);
 		}
-		
+
 		// start
 		enabled = true;
 		EVENTS.add(UpdateListener.class, this);
 		EVENTS.add(RenderListener.class, this);
 	}
-	
+
 	private BlockPos argsToPos(String... args) throws CmdException
 	{
 		switch(args.length)
 		{
 			default:
 			throw new CmdSyntaxError("Invalid coordinates.");
-			
+
 			case 1:
 			return argsToEntityPos(args[0]);
-			
+
 			case 3:
 			return argsToXyzPos(args);
 		}
 	}
-	
+
 	private BlockPos argsToEntityPos(String name) throws CmdError
 	{
 		LivingEntity entity = StreamSupport
@@ -97,19 +97,19 @@ public final class GoToCmd extends Command
 			.min(
 				Comparator.comparingDouble(e -> MC.player.squaredDistanceTo(e)))
 			.orElse(null);
-		
+
 		if(entity == null)
 			throw new CmdError("Entity \"" + name + "\" could not be found.");
-		
+
 		return BlockPos.ofFloored(entity.getPos());
 	}
-	
+
 	private BlockPos argsToXyzPos(String... xyz) throws CmdSyntaxError
 	{
 		BlockPos playerPos = BlockPos.ofFloored(MC.player.getPos());
 		int[] player = {playerPos.getX(), playerPos.getY(), playerPos.getZ()};
 		int[] pos = new int[3];
-		
+
 		for(int i = 0; i < 3; i++)
 			if(MathUtils.isInteger(xyz[i]))
 				pos[i] = Integer.parseInt(xyz[i]);
@@ -120,10 +120,10 @@ public final class GoToCmd extends Command
 				pos[i] = player[i] + Integer.parseInt(xyz[i].substring(1));
 			else
 				throw new CmdSyntaxError("Invalid coordinates.");
-			
+
 		return new BlockPos(pos[0], pos[1], pos[2]);
 	}
-	
+
 	@Override
 	public void onUpdate()
 	{
@@ -131,9 +131,9 @@ public final class GoToCmd extends Command
 		if(!pathFinder.isDone())
 		{
 			PathProcessor.lockControls();
-			
+
 			pathFinder.think();
-			
+
 			if(!pathFinder.isDone())
 			{
 				if(pathFinder.isFailed())
@@ -141,18 +141,18 @@ public final class GoToCmd extends Command
 					ChatUtils.error("Could not find a path.");
 					disable();
 				}
-				
+
 				return;
 			}
-			
+
 			pathFinder.formatPath();
-			
+
 			// set processor
 			processor = pathFinder.getProcessor();
-			
+
 			System.out.println("Done");
 		}
-		
+
 		// check path
 		if(processor != null
 			&& !pathFinder.isPathStillValid(processor.getIndex()))
@@ -161,14 +161,14 @@ public final class GoToCmd extends Command
 			pathFinder = new PathFinder(pathFinder.getGoal());
 			return;
 		}
-		
+
 		// process path
 		processor.process();
-		
+
 		if(processor.isDone())
 			disable();
 	}
-	
+
 	@Override
 	public void onRender(MatrixStack matrixStack, float partialTicks)
 	{
@@ -176,19 +176,19 @@ public final class GoToCmd extends Command
 		pathFinder.renderPath(matrixStack, pathCmd.isDebugMode(),
 			pathCmd.isDepthTest());
 	}
-	
+
 	private void disable()
 	{
 		EVENTS.remove(UpdateListener.class, this);
 		EVENTS.remove(RenderListener.class, this);
-		
+
 		pathFinder = null;
 		processor = null;
 		PathProcessor.releaseControls();
-		
+
 		enabled = false;
 	}
-	
+
 	public boolean isActive()
 	{
 		return enabled;

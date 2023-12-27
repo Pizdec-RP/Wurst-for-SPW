@@ -23,15 +23,15 @@ public final class ZoomOtf extends OtherFeature implements MouseScrollListener
 {
 	private final SliderSetting level = new SliderSetting("Zoom level", 3, 1,
 		50, 0.1, ValueDisplay.DECIMAL.withSuffix("x"));
-	
+
 	private final CheckboxSetting scroll = new CheckboxSetting(
 		"Use mouse wheel",
 		"If enabled, you can use the mouse wheel while zooming to zoom in even further.",
 		true);
-	
+
 	private Double currentLevel;
 	private Double defaultMouseSensitivity;
-	
+
 	public ZoomOtf()
 	{
 		super("Zoom", "Allows you to zoom in.\n"
@@ -41,68 +41,68 @@ public final class ZoomOtf extends OtherFeature implements MouseScrollListener
 		addSetting(scroll);
 		EVENTS.add(MouseScrollListener.class, this);
 	}
-	
+
 	public double changeFovBasedOnZoom(double fov)
 	{
 		SimpleOption<Double> mouseSensitivitySetting =
 			MC.options.getMouseSensitivity();
-		
+
 		if(currentLevel == null)
 			currentLevel = level.getValue();
-		
+
 		if(!WURST.getZoomKey().isPressed())
 		{
 			currentLevel = level.getValue();
-			
+
 			if(defaultMouseSensitivity != null)
 			{
 				mouseSensitivitySetting.setValue(defaultMouseSensitivity);
 				defaultMouseSensitivity = null;
 			}
-			
+
 			return fov;
 		}
-		
+
 		if(defaultMouseSensitivity == null)
 			defaultMouseSensitivity = mouseSensitivitySetting.getValue();
-			
+
 		// Adjust mouse sensitivity in relation to zoom level.
 		// 1.0 / currentLevel is a value between 0.02 (50x zoom)
 		// and 1 (no zoom).
 		mouseSensitivitySetting
 			.setValue(defaultMouseSensitivity * (1.0 / currentLevel));
-		
+
 		return fov / currentLevel;
 	}
-	
+
 	@Override
 	public void onMouseScroll(double amount)
 	{
 		if(!WURST.getZoomKey().isPressed() || !scroll.isChecked())
 			return;
-		
+
 		if(currentLevel == null)
 			currentLevel = level.getValue();
-		
+
 		if(amount > 0)
 			currentLevel *= 1.1;
 		else if(amount < 0)
 			currentLevel *= 0.9;
-		
+
 		currentLevel = MathUtils.clamp(currentLevel, level.getMinimum(),
 			level.getMaximum());
 	}
-	
+
 	public boolean shouldPreventHotbarScrolling()
 	{
 		return WURST.getZoomKey().isPressed() && scroll.isChecked();
 	}
-	
+
 	public SliderSetting getLevelSetting()
 	{
 		return level;
 	}
-	
+
 	public CheckboxSetting getScrollSetting()
 	{
 		return scroll;

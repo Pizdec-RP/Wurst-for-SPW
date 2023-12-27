@@ -1,10 +1,3 @@
-/*
-
- *
-
-
-
- */
 package net.purefps.altmanager.screens;
 
 import java.io.IOException;
@@ -29,6 +22,7 @@ import com.google.gson.JsonObject;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -49,7 +43,7 @@ import net.purefps.altmanager.NameGenerator;
 public abstract class AltEditorScreen extends Screen
 {
 	private final Path skinFolder =
-		PFPSClient.INSTANCE.getWurstFolder().resolve("skins");
+			PFPSClient.INSTANCE.getWurstFolder().resolve("skins");
 	
 	protected final Screen prevScreen;
 	
@@ -143,9 +137,6 @@ public abstract class AltEditorScreen extends Screen
 	@Override
 	public final void tick()
 	{
-		nameOrEmailBox.tick();
-		passwordBox.tick();
-		
 		String nameOrEmail = nameOrEmailBox.getText().trim();
 		boolean alex = nameOrEmail.equalsIgnoreCase("Alexander01998");
 		
@@ -346,7 +337,7 @@ public abstract class AltEditorScreen extends Screen
 	public void render(DrawContext context, int mouseX, int mouseY,
 		float partialTicks)
 	{
-		renderBackground(context);
+		renderBackground(context, mouseX, mouseY, partialTicks);
 		
 		MatrixStack matrixStack = context.getMatrices();
 		Matrix4f matrix = matrixStack.peek().getPositionMatrix();
@@ -399,7 +390,8 @@ public abstract class AltEditorScreen extends Screen
 			errorTimer--;
 		}
 		
-		super.render(context, mouseX, mouseY, partialTicks);
+		for(Drawable drawable : drawables)
+			drawable.render(context, mouseX, mouseY, partialTicks);
 	}
 	
 	@Override

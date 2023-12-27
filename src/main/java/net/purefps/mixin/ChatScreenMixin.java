@@ -27,19 +27,19 @@ public abstract class ChatScreenMixin extends Screen
 {
 	@Shadow
 	protected TextFieldWidget chatField;
-	
+
 	private ChatScreenMixin(PFPSClient wurst, Text title)
 	{
 		super(title);
 	}
-	
+
 	@Inject(at = @At("TAIL"), method = "init()V")
 	protected void onInit(CallbackInfo ci)
 	{
 		if(PFPSClient.INSTANCE.getHax().infiniChatHack.isEnabled())
 			chatField.setMaxLength(Integer.MAX_VALUE);
 	}
-	
+
 	@Inject(at = @At("HEAD"),
 		method = "sendMessage(Ljava/lang/String;Z)Z",
 		cancellable = true)
@@ -48,32 +48,32 @@ public abstract class ChatScreenMixin extends Screen
 	{
 		if((message = normalize(message)).isEmpty())
 			return;
-		
+
 		ChatOutputEvent event = new ChatOutputEvent(message);
 		EventManager.fire(event);
-		
+
 		if(event.isCancelled())
 		{
 			cir.setReturnValue(true);
 			return;
 		}
-		
+
 		if(!event.isModified())
 			return;
-		
+
 		String newMessage = event.getMessage();
 		if(addToHistory)
 			client.inGameHud.getChatHud().addToMessageHistory(newMessage);
-		
+
 		if(newMessage.startsWith("/"))
 			client.player.networkHandler
 				.sendChatCommand(newMessage.substring(1));
 		else
 			client.player.networkHandler.sendChatMessage(newMessage);
-		
+
 		cir.setReturnValue(true);
 	}
-	
+
 	@Shadow
 	public abstract String normalize(String chatText);
 }

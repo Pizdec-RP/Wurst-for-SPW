@@ -28,36 +28,36 @@ import net.purefps.util.RenderUtils;
 public final class NewChunksReasonsRenderer
 {
 	private final SliderSetting drawDistance;
-	
+
 	public NewChunksReasonsRenderer(SliderSetting drawDistance)
 	{
 		this.drawDistance = drawDistance;
 	}
-	
+
 	public BuiltBuffer buildBuffer(Set<BlockPos> reasons)
 	{
 		Tessellator tessellator = RenderSystem.renderThreadTesselator();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
-		
+
 		bufferBuilder.begin(VertexFormat.DrawMode.QUADS,
 			VertexFormats.POSITION);
 		renderBlocks(new ArrayList<>(reasons), bufferBuilder);
 		return bufferBuilder.end();
 	}
-	
+
 	private void renderBlocks(List<BlockPos> blocks,
 		BufferBuilder bufferBuilder)
 	{
 		ChunkPos camChunkPos = new ChunkPos(RenderUtils.getCameraBlockPos());
 		RegionPos region = RegionPos.of(camChunkPos);
 		int drawDistance = this.drawDistance.getValueI();
-		
+
 		for(BlockPos pos : blocks)
 		{
 			ChunkPos chunkPos = new ChunkPos(pos);
 			if(chunkPos.getChebyshevDistance(camChunkPos) > drawDistance)
 				continue;
-			
+
 			Box bb = new Box(pos).offset(-region.x(), 0, -region.z());
 			float minX = (float)bb.minX;
 			float minY = (float)bb.minY;
@@ -65,32 +65,32 @@ public final class NewChunksReasonsRenderer
 			float maxX = (float)bb.maxX;
 			float maxY = (float)bb.maxY;
 			float maxZ = (float)bb.maxZ;
-			
+
 			bufferBuilder.vertex(minX, minY, minZ).next();
 			bufferBuilder.vertex(maxX, minY, minZ).next();
 			bufferBuilder.vertex(maxX, minY, maxZ).next();
 			bufferBuilder.vertex(minX, minY, maxZ).next();
-			
+
 			bufferBuilder.vertex(minX, maxY, minZ).next();
 			bufferBuilder.vertex(minX, maxY, maxZ).next();
 			bufferBuilder.vertex(maxX, maxY, maxZ).next();
 			bufferBuilder.vertex(maxX, maxY, minZ).next();
-			
+
 			bufferBuilder.vertex(minX, minY, minZ).next();
 			bufferBuilder.vertex(minX, maxY, minZ).next();
 			bufferBuilder.vertex(maxX, maxY, minZ).next();
 			bufferBuilder.vertex(maxX, minY, minZ).next();
-			
+
 			bufferBuilder.vertex(maxX, minY, minZ).next();
 			bufferBuilder.vertex(maxX, maxY, minZ).next();
 			bufferBuilder.vertex(maxX, maxY, maxZ).next();
 			bufferBuilder.vertex(maxX, minY, maxZ).next();
-			
+
 			bufferBuilder.vertex(minX, minY, maxZ).next();
 			bufferBuilder.vertex(maxX, minY, maxZ).next();
 			bufferBuilder.vertex(maxX, maxY, maxZ).next();
 			bufferBuilder.vertex(minX, maxY, maxZ).next();
-			
+
 			bufferBuilder.vertex(minX, minY, minZ).next();
 			bufferBuilder.vertex(minX, minY, maxZ).next();
 			bufferBuilder.vertex(minX, maxY, maxZ).next();

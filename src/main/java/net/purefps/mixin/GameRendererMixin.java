@@ -31,7 +31,7 @@ import net.purefps.modules.FullbrightHack;
 public abstract class GameRendererMixin implements AutoCloseable
 {
 	private boolean cancelNextBobView;
-	
+
 	/**
 	 * Fires the CameraTransformViewBobbingEvent event and records whether the
 	 * next view-bobbing call should be cancelled.
@@ -46,11 +46,11 @@ public abstract class GameRendererMixin implements AutoCloseable
 		CameraTransformViewBobbingEvent event =
 			new CameraTransformViewBobbingEvent();
 		EventManager.fire(event);
-		
+
 		if(event.isCancelled())
 			cancelNextBobView = true;
 	}
-	
+
 	/**
 	 * Cancels the view-bobbing call if requested by the last
 	 * CameraTransformViewBobbingEvent.
@@ -63,11 +63,11 @@ public abstract class GameRendererMixin implements AutoCloseable
 	{
 		if(!cancelNextBobView)
 			return;
-		
+
 		ci.cancel();
 		cancelNextBobView = false;
 	}
-	
+
 	/**
 	 * This mixin is injected into a random method call later in the
 	 * renderWorld() method to ensure that cancelNextBobView is always reset
@@ -80,7 +80,7 @@ public abstract class GameRendererMixin implements AutoCloseable
 	{
 		cancelNextBobView = false;
 	}
-	
+
 	@Inject(
 		at = @At(value = "FIELD",
 			target = "Lnet/minecraft/client/render/GameRenderer;renderHand:Z",
@@ -93,7 +93,7 @@ public abstract class GameRendererMixin implements AutoCloseable
 		RenderEvent event = new RenderEvent(matrices, tickDelta);
 		EventManager.fire(event);
 	}
-	
+
 	@Inject(at = @At(value = "RETURN", ordinal = 1),
 		method = "getFov(Lnet/minecraft/client/render/Camera;FZ)D",
 		cancellable = true)
@@ -103,7 +103,7 @@ public abstract class GameRendererMixin implements AutoCloseable
 		cir.setReturnValue(PFPSClient.INSTANCE.getOtfs().zoomOtf
 			.changeFovBasedOnZoom(cir.getReturnValueD()));
 	}
-	
+
 	@Inject(at = @At(value = "INVOKE",
 		target = "Lnet/minecraft/entity/Entity;getCameraPosVec(F)Lnet/minecraft/util/math/Vec3d;",
 		opcode = Opcodes.INVOKEVIRTUAL,
@@ -113,7 +113,7 @@ public abstract class GameRendererMixin implements AutoCloseable
 		HitResultRayTraceEvent event = new HitResultRayTraceEvent(tickDelta);
 		EventManager.fire(event);
 	}
-	
+
 	@Redirect(
 		at = @At(value = "INVOKE",
 			target = "Lnet/minecraft/util/math/MathHelper;lerp(FFF)F",
@@ -123,10 +123,10 @@ public abstract class GameRendererMixin implements AutoCloseable
 	{
 		if(!PFPSClient.INSTANCE.getHax().antiWobbleHack.isEnabled())
 			return MathHelper.lerp(delta, start, end);
-		
+
 		return 0;
 	}
-	
+
 	@Inject(at = @At("HEAD"),
 		method = "getNightVisionStrength(Lnet/minecraft/entity/LivingEntity;F)F",
 		cancellable = true)
@@ -135,11 +135,11 @@ public abstract class GameRendererMixin implements AutoCloseable
 	{
 		FullbrightHack fullbright =
 			PFPSClient.INSTANCE.getHax().fullbrightHack;
-		
+
 		if(fullbright.isNightVisionActive())
 			cir.setReturnValue(fullbright.getNightVisionStrength());
 	}
-	
+
 	@Inject(at = @At("HEAD"),
 		method = "tiltViewWhenHurt(Lnet/minecraft/client/util/math/MatrixStack;F)V",
 		cancellable = true)

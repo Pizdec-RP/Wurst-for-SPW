@@ -18,23 +18,23 @@ import javax.swing.WindowConstants;
 public enum SwingUtils
 {
 	;
-	
+
 	public static void setLookAndFeel()
 	{
 		try
 		{
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-			
+
 		}catch(ReflectiveOperationException | UnsupportedLookAndFeelException e)
 		{
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	public static void setExitOnClose(JDialog dialog)
 	{
 		dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		
+
 		dialog.addWindowListener(new WindowAdapter()
 		{
 			@Override

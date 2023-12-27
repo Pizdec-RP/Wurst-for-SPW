@@ -23,13 +23,13 @@ public final class NavigatorHack extends Hack
 	{
 		super("Navigator");
 	}
-	
+
 	@Override
 	public void onEnable()
 	{
 		if(!(MC.currentScreen instanceof NavigatorMainScreen))
 			MC.setScreen(new NavigatorMainScreen());
-		
+
 		setEnabled(false);
 	}
 }

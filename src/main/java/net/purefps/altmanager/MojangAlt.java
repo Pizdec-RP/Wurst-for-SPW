@@ -17,9 +17,9 @@ public final class MojangAlt extends Alt
 {
 	private final String email;
 	private final String password;
-	
+
 	private String name = "";
-	
+
 	/**
 	 * @param email
 	 *            The Alt's email address. Cannot be null or empty.
@@ -30,7 +30,7 @@ public final class MojangAlt extends Alt
 	{
 		this(email, password, "", false);
 	}
-	
+
 	/**
 	 * @param email
 	 *            The Alt's email address. Cannot be null or empty.
@@ -46,43 +46,34 @@ public final class MojangAlt extends Alt
 		boolean favorite)
 	{
 		super(favorite);
-		
-		if(email == null || email.isEmpty())
+
+		if(email == null || email.isEmpty() || password == null || password.isEmpty())
 			throw new IllegalArgumentException();
-		
-		if(password == null || password.isEmpty())
-			throw new IllegalArgumentException();
-		
+
 		this.email = email;
 		this.password = password;
 		this.name = Objects.requireNonNull(name);
 	}
-	
+
 	@Override
 	public void login() throws LoginException
 	{
-		try
-		{
-			MicrosoftLoginManager.login(email, password);
-		}catch(Exception e)
-		{
-			LoginManager.login(email, password);
-		}
+		MicrosoftLoginManager.login(email, password);
 		name = getNameFromSession();
 	}
-	
+
 	private String getNameFromSession()
 	{
 		String name = PFPSClient.MC.getSession().getUsername();
-		
+
 		if(name == null || name.isEmpty())
 			throw new RuntimeException(
 				"Login returned " + (name == null ? "null" : "empty")
 					+ " username. This shouldn't be possible!");
-		
+
 		return name;
 	}
-	
+
 	@Override
 	public void exportAsJson(JsonObject json)
 	{
@@ -92,25 +83,25 @@ public final class MojangAlt extends Alt
 		jsonAlt.addProperty("starred", isFavorite());
 		json.add(email, jsonAlt);
 	}
-	
+
 	@Override
 	public String exportAsTXT()
 	{
 		return email + ":" + password;
 	}
-	
+
 	@Override
 	public String getName()
 	{
 		return name;
 	}
-	
+
 	@Override
 	public String getDisplayName()
 	{
 		return name.isEmpty() ? email : name;
 	}
-	
+
 	/**
 	 * @return The Alt's email address. Cannot be null or empty.
 	 */
@@ -118,7 +109,7 @@ public final class MojangAlt extends Alt
 	{
 		return email;
 	}
-	
+
 	/**
 	 * @return The Alt's password. Cannot be null or empty.
 	 */
@@ -126,22 +117,22 @@ public final class MojangAlt extends Alt
 	{
 		return password;
 	}
-	
+
 	@Override
 	public int hashCode()
 	{
 		return Objects.hash(email);
 	}
-	
+
 	@Override
 	public boolean equals(Object obj)
 	{
 		if(this == obj)
 			return true;
-		
+
 		if(!(obj instanceof MojangAlt))
 			return false;
-		
+
 		MojangAlt other = (MojangAlt)obj;
 		return Objects.equals(email, other.email);
 	}

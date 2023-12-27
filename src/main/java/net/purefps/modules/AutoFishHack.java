@@ -38,42 +38,42 @@ public final class AutoFishHack extends Hack
 			+ "Increase your range if bites are not being detected, decrease it"
 			+ " if other people's bites are being detected as yours.",
 		1.5, 0.25, 8, 0.25, ValueDisplay.DECIMAL);
-	
+
 	private final SliderSetting catchDelay = new SliderSetting("Catch delay",
 		"How long AutoFish will wait after a bite before reeling in.", 0, 0, 60,
 		1, ValueDisplay.INTEGER.withSuffix(" ticks").withLabel(1, "1 tick"));
-	
+
 	private final SliderSetting retryDelay = new SliderSetting("Retry delay",
 		"If casting or reeling in the fishing rod fails, this is how long"
 			+ " AutoFish will wait before trying again.",
 		15, 0, 100, 1,
 		ValueDisplay.INTEGER.withSuffix(" ticks").withLabel(1, "1 tick"));
-	
+
 	private final SliderSetting patience = new SliderSetting("Patience",
 		"How long AutoFish will wait if it doesn't get a bite before reeling in.",
 		60, 10, 120, 1, ValueDisplay.INTEGER.withSuffix("s"));
-	
+
 	private final CheckboxSetting stopWhenInvFull = new CheckboxSetting(
 		"Stop when inv full",
 		"If enabled, AutoFish will turn itself off when your inventory is full.",
 		false);
-	
+
 	private final ShallowWaterWarningCheckbox shallowWaterWarning =
 		new ShallowWaterWarningCheckbox();
-	
+
 	private final AutoFishDebugDraw debugDraw =
 		new AutoFishDebugDraw(validRange);
 	private final AutoFishRodSelector rodSelector =
 		new AutoFishRodSelector(this);
-	
+
 	private int castRodTimer;
 	private int reelInTimer;
-	
+
 	public AutoFishHack()
 	{
 		super("AutoFish");
 		setCategory(Category.OTHER);
-		
+
 		addSetting(validRange);
 		addSetting(catchDelay);
 		addSetting(retryDelay);
@@ -83,16 +83,16 @@ public final class AutoFishHack extends Hack
 		addSetting(stopWhenInvFull);
 		addSetting(shallowWaterWarning);
 	}
-	
+
 	@Override
 	public String getRenderName()
 	{
 		if(!rodSelector.hasARod())
 			return getName() + " [out of rods]";
-		
+
 		return getName();
 	}
-	
+
 	@Override
 	public void onEnable()
 	{
@@ -101,12 +101,12 @@ public final class AutoFishHack extends Hack
 		rodSelector.reset();
 		debugDraw.reset();
 		shallowWaterWarning.reset();
-		
+
 		EVENTS.add(UpdateListener.class, this);
 		EVENTS.add(PacketInputListener.class, this);
 		EVENTS.add(RenderListener.class, this);
 	}
-	
+
 	@Override
 	public void onDisable()
 	{
@@ -114,7 +114,7 @@ public final class AutoFishHack extends Hack
 		EVENTS.remove(PacketInputListener.class, this);
 		EVENTS.remove(RenderListener.class, this);
 	}
-	
+
 	@Override
 	public void onUpdate()
 	{
@@ -123,7 +123,7 @@ public final class AutoFishHack extends Hack
 			castRodTimer--;
 		if(reelInTimer > 0)
 			reelInTimer--;
-		
+
 		// check if inventory is full
 		if(stopWhenInvFull.isChecked()
 			&& MC.player.getInventory().getEmptySlot() == -1)
@@ -133,26 +133,26 @@ public final class AutoFishHack extends Hack
 			setEnabled(false);
 			return;
 		}
-		
+
 		// select fishing rod
 		if(!rodSelector.isBestRodAlreadySelected())
 		{
 			rodSelector.selectBestRod();
 			return;
 		}
-		
+
 		// if not fishing, cast rod
 		if(!isFishing())
 		{
 			if(castRodTimer > 0)
 				return;
-			
+
 			MC.doItemUse();
 			castRodTimer = retryDelay.getValueI();
 			reelInTimer = 20 * patience.getValueI();
 			return;
 		}
-		
+
 		// otherwise, reel in when it's time
 		if(reelInTimer == 0)
 		{
@@ -161,48 +161,44 @@ public final class AutoFishHack extends Hack
 			castRodTimer = retryDelay.getValueI();
 		}
 	}
-	
+
 	@Override
 	public void onReceivedPacket(PacketInputEvent event)
 	{
 		// check packet type
-		if(!(event.getPacket() instanceof PlaySoundS2CPacket sound))
-			return;
 		
+
 		// check sound type
-		if(!SoundEvents.ENTITY_FISHING_BOBBER_SPLASH
-			.equals(sound.getSound().value()))
-			return;
-		
 		// check if player is fishing
-		if(!isFishing())
+		if(!(event.getPacket() instanceof PlaySoundS2CPacket sound) || !SoundEvents.ENTITY_FISHING_BOBBER_SPLASH
+			.equals(sound.getSound().value()) || !isFishing())
 			return;
-		
+
 		// check if player is holding a fishing rod
 		ClientPlayerEntity player = MC.player;
 		if(!player.getMainHandStack().isOf(Items.FISHING_ROD))
 			return;
-		
+
 		debugDraw.updateSoundPos(sound);
-		
+
 		// check sound position
 		FishingBobberEntity bobber = player.fishHook;
 		if(Math.abs(sound.getX() - bobber.getX()) > validRange.getValue()
 			|| Math.abs(sound.getZ() - bobber.getZ()) > validRange.getValue())
 			return;
-		
+
 		shallowWaterWarning.checkWaterAround(bobber);
-		
+
 		// catch fish
 		reelInTimer = catchDelay.getValueI();
 	}
-	
+
 	@Override
 	public void onRender(MatrixStack matrixStack, float partialTicks)
 	{
 		debugDraw.render(matrixStack, partialTicks);
 	}
-	
+
 	private boolean isFishing()
 	{
 		ClientPlayerEntity player = MC.player;

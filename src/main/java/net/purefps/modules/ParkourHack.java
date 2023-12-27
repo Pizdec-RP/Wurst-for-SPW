@@ -21,12 +21,12 @@ public final class ParkourHack extends Hack implements UpdateListener
 			+ "Increase to stop Parkour from jumping down stairs.\n"
 			+ "Decrease to make Parkour jump at the edge of carpets.",
 		0.5, 0.05, 10, 0.05, ValueDisplay.DECIMAL.withSuffix("m"));
-	
+
 	private final SliderSetting edgeDistance =
 		new SliderSetting("Edge distance",
 			"How close Parkour will let you get to the edge before jumping.",
 			0.001, 0.001, 0.25, 0.001, ValueDisplay.DECIMAL.withSuffix("m"));
-	
+
 	public ParkourHack()
 	{
 		super("Parkour");
@@ -34,36 +34,33 @@ public final class ParkourHack extends Hack implements UpdateListener
 		addSetting(minDepth);
 		addSetting(edgeDistance);
 	}
-	
+
 	@Override
 	public void onEnable()
 	{
 		WURST.getHax().safeWalkHack.setEnabled(false);
 		EVENTS.add(UpdateListener.class, this);
 	}
-	
+
 	@Override
 	public void onDisable()
 	{
 		EVENTS.remove(UpdateListener.class, this);
 	}
-	
+
 	@Override
 	public void onUpdate()
 	{
-		if(!MC.player.isOnGround() || MC.options.jumpKey.isPressed())
+		if(!MC.player.isOnGround() || MC.options.jumpKey.isPressed() || MC.player.isSneaking() || MC.options.sneakKey.isPressed())
 			return;
-		
-		if(MC.player.isSneaking() || MC.options.sneakKey.isPressed())
-			return;
-		
+
 		Box box = MC.player.getBoundingBox();
 		Box adjustedBox = box.stretch(0, -minDepth.getValue(), 0)
 			.expand(-edgeDistance.getValue(), 0, -edgeDistance.getValue());
-		
+
 		if(!MC.world.isSpaceEmpty(MC.player, adjustedBox))
 			return;
-		
+
 		MC.player.jump();
 	}
 }

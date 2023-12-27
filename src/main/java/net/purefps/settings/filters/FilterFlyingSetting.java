@@ -23,30 +23,30 @@ public final class FilterFlyingSetting extends SliderSetting
 		super("Filter flying", description, value, 0, 2, 0.05,
 			ValueDisplay.DECIMAL.withLabel(0, "off"));
 	}
-	
+
 	@Override
 	public boolean test(Entity e)
 	{
 		if(!(e instanceof PlayerEntity))
 			return true;
-		
+
 		Box box = e.getBoundingBox();
 		box = box.union(box.offset(0, -getValue(), 0));
 		return !PFPSClient.MC.world.isSpaceEmpty(box);
 	}
-	
+
 	@Override
 	public boolean isFilterEnabled()
 	{
 		return getValue() > 0;
 	}
-	
+
 	@Override
 	public Setting getSetting()
 	{
 		return this;
 	}
-	
+
 	public static FilterFlyingSetting genericCombat(double value)
 	{
 		return new FilterFlyingSetting(

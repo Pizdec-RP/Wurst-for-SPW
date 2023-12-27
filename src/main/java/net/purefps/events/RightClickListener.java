@@ -21,7 +21,7 @@ public interface RightClickListener extends Listener
 	 * item use cooldown is increased.
 	 */
 	public void onRightClick(RightClickEvent event);
-	
+
 	public static class RightClickEvent
 		extends CancellableEvent<RightClickListener>
 	{
@@ -31,12 +31,12 @@ public interface RightClickListener extends Listener
 			for(RightClickListener listener : listeners)
 			{
 				listener.onRightClick(this);
-				
+
 				if(isCancelled())
 					break;
 			}
 		}
-		
+
 		@Override
 		public Class<RightClickListener> getListenerType()
 		{

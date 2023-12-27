@@ -28,25 +28,25 @@ public abstract class DeathScreenMixin extends Screen
 	{
 		super(title);
 	}
-	
+
 	@Inject(at = @At("TAIL"), method = "tick()V")
 	private void onTick(CallbackInfo ci)
 	{
 		EventManager.fire(DeathEvent.INSTANCE);
 	}
-	
+
 	@Inject(at = @At("TAIL"), method = "init()V")
 	private void onInit(CallbackInfo ci)
 	{
 		AutoRespawnHack autoRespawn =
 			PFPSClient.INSTANCE.getHax().autoRespawnHack;
-		
+
 		if(!autoRespawn.shouldShowButton())
 			return;
-		
+
 		int backButtonX = width / 2 - 100;
 		int backButtonY = height / 4;
-		
+
 		addDrawableChild(
 			ButtonWidget.builder(Text.literal("AutoRespawn: OFF"), b -> {
 				autoRespawn.setEnabled(true);

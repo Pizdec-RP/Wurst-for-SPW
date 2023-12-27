@@ -30,10 +30,10 @@ public abstract class CameraMixin
 			PFPSClient.INSTANCE.getHax().cameraDistanceHack;
 		if(cameraDistance.isEnabled())
 			return cameraDistance.getDistance();
-		
+
 		return desiredCameraDistance;
 	}
-	
+
 	@Inject(at = @At("HEAD"), method = "clipToSpace(D)D", cancellable = true)
 	private void onClipToSpace(double desiredCameraDistance,
 		CallbackInfoReturnable<Double> cir)
@@ -41,7 +41,7 @@ public abstract class CameraMixin
 		if(PFPSClient.INSTANCE.getHax().cameraNoClipHack.isEnabled())
 			cir.setReturnValue(desiredCameraDistance);
 	}
-	
+
 	@Inject(at = @At("HEAD"),
 		method = "getSubmersionType()Lnet/minecraft/client/render/CameraSubmersionType;",
 		cancellable = true)

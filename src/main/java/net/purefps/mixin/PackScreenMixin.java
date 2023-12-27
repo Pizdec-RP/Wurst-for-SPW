@@ -24,7 +24,7 @@ public class PackScreenMixin extends Screen
 	{
 		super(title);
 	}
-	
+
 	/**
 	 * Scans for problematic resource packs (currently just VanillaTweaks
 	 * Twinkling Stars) whenever the resource pack screen is closed.

@@ -22,7 +22,7 @@ public final class DisableOtf extends OtherFeature
 		"Removes the \"Enable Wurst\" button as soon as you close the Statistics screen."
 			+ " You will have to restart the game to re-enable Wurst.",
 		false);
-	
+
 	public DisableOtf()
 	{
 		super("Disable Wurst",
@@ -30,7 +30,7 @@ public final class DisableOtf extends OtherFeature
 				+ "It will turn into an \"Enable Wurst\" button once pressed.");
 		addSetting(hideEnableButton);
 	}
-	
+
 	public boolean shouldHideEnableButton()
 	{
 		return !WURST.isEnabled() && hideEnableButton.isChecked();

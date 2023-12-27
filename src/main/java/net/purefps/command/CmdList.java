@@ -13,7 +13,57 @@ import java.util.TreeMap;
 
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
-import net.purefps.commands.*;
+import net.purefps.commands.AddAltCmd;
+import net.purefps.commands.AnnoyCmd;
+import net.purefps.commands.AuthorCmd;
+import net.purefps.commands.BindCmd;
+import net.purefps.commands.BindsCmd;
+import net.purefps.commands.BlinkCmd;
+import net.purefps.commands.BlockListCmd;
+import net.purefps.commands.ClearCmd;
+import net.purefps.commands.CopyItemCmd;
+import net.purefps.commands.DamageCmd;
+import net.purefps.commands.DigCmd;
+import net.purefps.commands.DropCmd;
+import net.purefps.commands.EnabledHaxCmd;
+import net.purefps.commands.EnchantCmd;
+import net.purefps.commands.ExcavateCmd;
+import net.purefps.commands.FeaturesCmd;
+import net.purefps.commands.FollowCmd;
+import net.purefps.commands.FriendsCmd;
+import net.purefps.commands.GetPosCmd;
+import net.purefps.commands.GiveCmd;
+import net.purefps.commands.GmCmd;
+import net.purefps.commands.GoToCmd;
+import net.purefps.commands.HelpCmd;
+import net.purefps.commands.InvseeCmd;
+import net.purefps.commands.IpCmd;
+import net.purefps.commands.ItemListCmd;
+import net.purefps.commands.JumpCmd;
+import net.purefps.commands.LeaveCmd;
+import net.purefps.commands.ModifyCmd;
+import net.purefps.commands.PathCmd;
+import net.purefps.commands.PotionCmd;
+import net.purefps.commands.ProtectCmd;
+import net.purefps.commands.RenameCmd;
+import net.purefps.commands.RepairCmd;
+import net.purefps.commands.RvCmd;
+import net.purefps.commands.SayCmd;
+import net.purefps.commands.SetBlockCmd;
+import net.purefps.commands.SetCheckboxCmd;
+import net.purefps.commands.SetColorCmd;
+import net.purefps.commands.SetModeCmd;
+import net.purefps.commands.SetSliderCmd;
+import net.purefps.commands.SettingsCmd;
+import net.purefps.commands.SvCmd;
+import net.purefps.commands.TCmd;
+import net.purefps.commands.TacoCmd;
+import net.purefps.commands.TooManyHaxCmd;
+import net.purefps.commands.TpCmd;
+import net.purefps.commands.UnbindCmd;
+import net.purefps.commands.VClipCmd;
+import net.purefps.commands.ViewNbtCmd;
+import net.purefps.commands.XrayCmd;
 
 public final class CmdList
 {
@@ -68,10 +118,10 @@ public final class CmdList
 	public final VClipCmd vClipCmd = new VClipCmd();
 	public final ViewNbtCmd viewNbtCmd = new ViewNbtCmd();
 	public final XrayCmd xrayCmd = new XrayCmd();
-	
+
 	private final TreeMap<String, Command> cmds =
 		new TreeMap<>(String::compareToIgnoreCase);
-	
+
 	public CmdList()
 	{
 		try
@@ -80,11 +130,11 @@ public final class CmdList
 			{
 				if(!field.getName().endsWith("Cmd"))
 					continue;
-				
+
 				Command cmd = (Command)field.get(this);
 				cmds.put(cmd.getName(), cmd);
 			}
-			
+
 		}catch(Exception e)
 		{
 			String message = "Initializing Wurst commands";
@@ -92,17 +142,17 @@ public final class CmdList
 			throw new CrashException(report);
 		}
 	}
-	
+
 	public Command getCmdByName(String name)
 	{
 		return cmds.get("." + name);
 	}
-	
+
 	public Collection<Command> getAllCmds()
 	{
 		return cmds.values();
 	}
-	
+
 	public int countCmds()
 	{
 		return cmds.size();

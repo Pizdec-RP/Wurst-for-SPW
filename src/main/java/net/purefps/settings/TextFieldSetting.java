@@ -28,40 +28,40 @@ public final class TextFieldSetting extends Setting
 	private String value = "";
 	private final String defaultValue;
 	private final Predicate<String> validator;
-	
+
 	public TextFieldSetting(String name, String description,
 		String defaultValue, Predicate<String> validator)
 	{
 		super(name, description);
-		
+
 		Objects.requireNonNull(defaultValue);
 		Objects.requireNonNull(validator);
 		if(!validator.test(defaultValue))
 			throw new IllegalArgumentException(
 				"Default value is not valid: " + defaultValue);
-		
+
 		value = defaultValue;
 		this.defaultValue = defaultValue;
 		this.validator = validator;
 	}
-	
+
 	public TextFieldSetting(String name, String defaultValue,
 		Predicate<String> validator)
 	{
 		this(name, "", defaultValue, validator);
 	}
-	
+
 	public TextFieldSetting(String name, String description,
 		String defaultValue)
 	{
 		this(name, description, defaultValue, s -> true);
 	}
-	
+
 	public TextFieldSetting(String name, String defaultValue)
 	{
 		this(name, "", defaultValue, s -> true);
 	}
-	
+
 	/**
 	 * @return this setting's value. Cannot be null.
 	 */
@@ -69,42 +69,36 @@ public final class TextFieldSetting extends Setting
 	{
 		return value;
 	}
-	
+
 	public String getDefaultValue()
 	{
 		return defaultValue;
 	}
-	
+
 	/**
 	 * Sets this setting's value. Fails silently if the given value is invalid.
 	 */
 	public void setValue(String value)
 	{
-		if(value == null)
+		if((value == null) || this.value.equals(value) || !validator.test(value))
 			return;
-		
-		if(this.value.equals(value))
-			return;
-		
-		if(!validator.test(value))
-			return;
-		
+
 		this.value = value;
 		PFPSClient.INSTANCE.saveSettings();
 	}
-	
+
 	public void resetToDefault()
 	{
 		value = defaultValue;
 		PFPSClient.INSTANCE.saveSettings();
 	}
-	
+
 	@Override
 	public Component getComponent()
 	{
 		return new TextFieldEditButton(this);
 	}
-	
+
 	@Override
 	public void fromJson(JsonElement json)
 	{
@@ -113,22 +107,22 @@ public final class TextFieldSetting extends Setting
 			String newValue = JsonUtils.getAsString(json);
 			if(!validator.test(newValue))
 				throw new JsonException();
-			
+
 			value = newValue;
-			
+
 		}catch(JsonException e)
 		{
 			e.printStackTrace();
 			resetToDefault();
 		}
 	}
-	
+
 	@Override
 	public JsonElement toJson()
 	{
 		return new JsonPrimitive(value);
 	}
-	
+
 	@Override
 	public JsonObject exportWikiData()
 	{
@@ -139,7 +133,7 @@ public final class TextFieldSetting extends Setting
 		json.addProperty("defaultValue", defaultValue);
 		return json;
 	}
-	
+
 	@Override
 	public Set<PossibleKeybind> getPossibleKeybinds(String featureName)
 	{

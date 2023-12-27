@@ -22,7 +22,7 @@ public abstract class StatusEffectInstanceMixin
 {
 	@Shadow
 	private int duration;
-	
+
 	@Inject(at = @At("HEAD"), method = "updateDuration()I", cancellable = true)
 	private void onUpdateDuration(CallbackInfoReturnable<Integer> cir)
 	{

@@ -24,7 +24,7 @@ import net.minecraft.util.InvalidIdentifierException;
 public enum ItemUtils
 {
 	;
-	
+
 	/**
 	 * @param nameOrId
 	 *            a String containing the item's name ({@link Identifier}) or
@@ -41,28 +41,28 @@ public enum ItemUtils
 			Item item = Registries.ITEM.get(id);
 			if(id != 0 && Registries.ITEM.getRawId(item) == 0)
 				return null;
-			
+
 			return item;
 		}
-		
+
 		try
 		{
 			return Registries.ITEM.getOrEmpty(new Identifier(nameOrId))
 				.orElse(null);
-			
+
 		}catch(InvalidIdentifierException e)
 		{
 			return null;
 		}
 	}
-	
+
 	public static float getAttackSpeed(ToolItem item)
 	{
 		return (float)item.getAttributeModifiers(EquipmentSlot.MAINHAND)
 			.get(EntityAttributes.GENERIC_ATTACK_SPEED).stream().findFirst()
 			.orElseThrow().getValue();
 	}
-	
+
 	/**
 	 * Adds the specified enchantment to the specified item stack. Unlike
 	 * {@link ItemStack#addEnchantment(Enchantment, int)}, this method doesn't
@@ -75,13 +75,13 @@ public enum ItemUtils
 		NbtList nbt = getOrCreateNbtList(stack, ItemStack.ENCHANTMENTS_KEY);
 		nbt.add(EnchantmentHelper.createNbt(id, level));
 	}
-	
+
 	public static NbtList getOrCreateNbtList(ItemStack stack, String key)
 	{
 		NbtCompound nbt = stack.getOrCreateNbt();
 		if(!nbt.contains(key, NbtElement.LIST_TYPE))
 			nbt.put(key, new NbtList());
-		
+
 		return nbt.getList(key, NbtElement.COMPOUND_TYPE);
 	}
 }

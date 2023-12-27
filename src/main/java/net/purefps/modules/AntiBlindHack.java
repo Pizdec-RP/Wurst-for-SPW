@@ -22,7 +22,7 @@ public final class AntiBlindHack extends Hack
 		super("AntiBlind");
 		setCategory(Category.RENDER);
 	}
-	
+
 	// See BackgroundRendererMixin, WorldRendererMixin,
 	// ClientPlayerEntityMixin.hasStatusEffect()
 }

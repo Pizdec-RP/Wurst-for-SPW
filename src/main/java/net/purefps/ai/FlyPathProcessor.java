@@ -19,13 +19,13 @@ import net.purefps.util.RotationUtils;
 public class FlyPathProcessor extends PathProcessor
 {
 	private final boolean creativeFlying;
-	
+
 	public FlyPathProcessor(ArrayList<PathPos> path, boolean creativeFlying)
 	{
 		super(path);
 		this.creativeFlying = creativeFlying;
 	}
-	
+
 	@Override
 	public void process()
 	{
@@ -37,12 +37,12 @@ public class FlyPathProcessor extends PathProcessor
 		Box nextBox = new Box(nextPos.getX() + 0.3, nextPos.getY(),
 			nextPos.getZ() + 0.3, nextPos.getX() + 0.7, nextPos.getY() + 0.2,
 			nextPos.getZ() + 0.7);
-		
+
 		if(posIndex == -1)
 			ticksOffPath++;
 		else
 			ticksOffPath = 0;
-		
+
 		// update index
 		if(posIndex > index
 			|| posVec.x >= nextBox.minX && posVec.x <= nextBox.maxX
@@ -53,30 +53,30 @@ public class FlyPathProcessor extends PathProcessor
 				index = posIndex + 1;
 			else
 				index++;
-			
+
 			// stop when changing directions
 			if(creativeFlying)
 			{
 				Vec3d v = MC.player.getVelocity();
-				
+
 				MC.player.setVelocity(v.x / Math.max(Math.abs(v.x) * 50, 1),
 					v.y / Math.max(Math.abs(v.y) * 50, 1),
 					v.z / Math.max(Math.abs(v.z) * 50, 1));
 			}
-			
+
 			if(index >= path.size())
 				done = true;
-			
+
 			return;
 		}
-		
+
 		lockControls();
 		MC.player.getAbilities().flying = creativeFlying;
 		boolean x = posVec.x < nextBox.minX || posVec.x > nextBox.maxX;
 		boolean y = posVec.y < nextBox.minY || posVec.y > nextBox.maxY;
 		boolean z = posVec.z < nextBox.minZ || posVec.z > nextBox.maxZ;
 		boolean horizontal = x || z;
-		
+
 		// face next position
 		if(horizontal)
 		{
@@ -85,17 +85,17 @@ public class FlyPathProcessor extends PathProcessor
 				.getHorizontalAngleToLookVec(Vec3d.ofCenter(nextPos)))) > 1)
 				return;
 		}
-		
+
 		// skip mid-air nodes
 		Vec3i offset = nextPos.subtract(pos);
 		while(index < path.size() - 1
 			&& path.get(index).add(offset).equals(path.get(index + 1)))
 			index++;
-		
+
 		if(creativeFlying)
 		{
 			Vec3d v = MC.player.getVelocity();
-			
+
 			if(!x)
 				MC.player.setVelocity(v.x / Math.max(Math.abs(v.x) * 50, 1),
 					v.y, v.z);
@@ -106,10 +106,10 @@ public class FlyPathProcessor extends PathProcessor
 				MC.player.setVelocity(v.x, v.y,
 					v.z / Math.max(Math.abs(v.z) * 50, 1));
 		}
-		
+
 		Vec3d vecInPos = new Vec3d(nextPos.getX() + 0.5, nextPos.getY() + 0.1,
 			nextPos.getZ() + 0.5);
-		
+
 		// horizontal movement
 		if(horizontal)
 		{
@@ -120,15 +120,15 @@ public class FlyPathProcessor extends PathProcessor
 				MC.player.setPosition(vecInPos.x, vecInPos.y, vecInPos.z);
 				return;
 			}
-			
+
 			MC.options.forwardKey.setPressed(true);
-			
+
 			if(MC.player.horizontalCollision)
 				if(posVec.y > nextBox.maxY)
 					MC.options.sneakKey.setPressed(true);
 				else if(posVec.y < nextBox.minY)
 					MC.options.jumpKey.setPressed(true);
-				
+
 			// vertical movement
 		}else if(y)
 		{
@@ -138,12 +138,12 @@ public class FlyPathProcessor extends PathProcessor
 				MC.player.setPosition(vecInPos.x, vecInPos.y, vecInPos.z);
 				return;
 			}
-			
+
 			if(posVec.y < nextBox.minY)
 				MC.options.jumpKey.setPressed(true);
 			else
 				MC.options.sneakKey.setPressed(true);
-			
+
 			if(MC.player.verticalCollision)
 			{
 				MC.options.sneakKey.setPressed(false);
@@ -151,7 +151,7 @@ public class FlyPathProcessor extends PathProcessor
 			}
 		}
 	}
-	
+
 	@Override
 	public boolean canBreakBlocks()
 	{

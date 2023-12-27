@@ -47,16 +47,16 @@ public class ClientPlayerEntityMixin extends AbstractClientPlayerEntity
 	@Shadow
 	@Final
 	protected MinecraftClient client;
-	
+
 	private Screen tempCurrentScreen;
 	private boolean hideNextItemUse;
-	
+
 	public ClientPlayerEntityMixin(PFPSClient wurst, ClientWorld world,
 		GameProfile profile)
 	{
 		super(world, profile);
 	}
-	
+
 	@Inject(at = @At(value = "INVOKE",
 		target = "Lnet/minecraft/client/network/AbstractClientPlayerEntity;tick()V",
 		ordinal = 0), method = "tick()V")
@@ -64,7 +64,7 @@ public class ClientPlayerEntityMixin extends AbstractClientPlayerEntity
 	{
 		EventManager.fire(UpdateEvent.INSTANCE);
 	}
-	
+
 	/**
 	 * This mixin runs just before the tickMovement() method calls
 	 * isUsingItem(), so that the onIsUsingItem() mixin knows which
@@ -78,7 +78,7 @@ public class ClientPlayerEntityMixin extends AbstractClientPlayerEntity
 		if(PFPSClient.INSTANCE.getHax().noSlowdownHack.isEnabled())
 			hideNextItemUse = true;
 	}
-	
+
 	/**
 	 * Pretends that the player is not using an item when instructed to do so by
 	 * the onTickMovement() mixin.
@@ -88,11 +88,11 @@ public class ClientPlayerEntityMixin extends AbstractClientPlayerEntity
 	{
 		if(!hideNextItemUse)
 			return;
-		
+
 		cir.setReturnValue(false);
 		hideNextItemUse = false;
 	}
-	
+
 	/**
 	 * This mixin is injected into a random field access later in the
 	 * tickMovement() method to ensure that hideNextItemUse is always reset
@@ -106,26 +106,26 @@ public class ClientPlayerEntityMixin extends AbstractClientPlayerEntity
 	{
 		hideNextItemUse = false;
 	}
-	
+
 	@Inject(at = @At("HEAD"), method = "sendMovementPackets()V")
 	private void onSendMovementPacketsHEAD(CallbackInfo ci)
 	{
 		EventManager.fire(PreMotionEvent.INSTANCE);
 	}
-	
+
 	@Inject(at = @At("TAIL"), method = "sendMovementPackets()V")
 	private void onSendMovementPacketsTAIL(CallbackInfo ci)
 	{
 		EventManager.fire(PostMotionEvent.INSTANCE);
 	}
-	
+
 	@Inject(at = @At("HEAD"),
 		method = "move(Lnet/minecraft/entity/MovementType;Lnet/minecraft/util/math/Vec3d;)V")
 	private void onMove(MovementType type, Vec3d offset, CallbackInfo ci)
 	{
 		EventManager.fire(PlayerMoveEvent.INSTANCE);
 	}
-	
+
 	@Inject(at = @At("HEAD"),
 		method = "isAutoJumpEnabled()Z",
 		cancellable = true)
@@ -134,7 +134,7 @@ public class ClientPlayerEntityMixin extends AbstractClientPlayerEntity
 		if(!PFPSClient.INSTANCE.getHax().stepHack.isAutoJumpAllowed())
 			cir.setReturnValue(false);
 	}
-	
+
 	/**
 	 * When PortalGUI is enabled, this mixin temporarily sets the current screen
 	 * to null to prevent the updateNausea() method from closing it.
@@ -147,11 +147,11 @@ public class ClientPlayerEntityMixin extends AbstractClientPlayerEntity
 	{
 		if(!PFPSClient.INSTANCE.getHax().portalGuiHack.isEnabled())
 			return;
-		
+
 		tempCurrentScreen = client.currentScreen;
 		client.currentScreen = null;
 	}
-	
+
 	/**
 	 * This mixin restores the current screen as soon as the updateNausea()
 	 * method is done looking at it.
@@ -164,11 +164,11 @@ public class ClientPlayerEntityMixin extends AbstractClientPlayerEntity
 	{
 		if(tempCurrentScreen == null)
 			return;
-		
+
 		client.currentScreen = tempCurrentScreen;
 		tempCurrentScreen = null;
 	}
-	
+
 	/**
 	 * Getter method for what used to be airStrafingSpeed.
 	 * Overridden to allow for the speed to be modified by hacks.
@@ -181,7 +181,7 @@ public class ClientPlayerEntityMixin extends AbstractClientPlayerEntity
 		EventManager.fire(event);
 		return event.getSpeed();
 	}
-	
+
 	@Override
 	public void setVelocityClient(double x, double y, double z)
 	{
@@ -189,40 +189,40 @@ public class ClientPlayerEntityMixin extends AbstractClientPlayerEntity
 		EventManager.fire(event);
 		super.setVelocityClient(event.getX(), event.getY(), event.getZ());
 	}
-	
+
 	@Override
 	public boolean isTouchingWater()
 	{
 		boolean inWater = super.isTouchingWater();
 		IsPlayerInWaterEvent event = new IsPlayerInWaterEvent(inWater);
 		EventManager.fire(event);
-		
+
 		return event.isInWater();
 	}
-	
+
 	@Override
 	public boolean isInLava()
 	{
 		boolean inLava = super.isInLava();
 		IsPlayerInLavaEvent event = new IsPlayerInLavaEvent(inLava);
 		EventManager.fire(event);
-		
+
 		return event.isInLava();
 	}
-	
+
 	@Override
 	public boolean isSpectator()
 	{
 		return super.isSpectator()
 			|| PFPSClient.INSTANCE.getHax().freecamHack.isEnabled();
 	}
-	
+
 	@Override
 	public boolean isTouchingWaterBypass()
 	{
 		return super.isTouchingWater();
 	}
-	
+
 	@Override
 	protected float getJumpVelocity()
 	{
@@ -230,7 +230,7 @@ public class ClientPlayerEntityMixin extends AbstractClientPlayerEntity
 			+ PFPSClient.INSTANCE.getHax().highJumpHack
 				.getAdditionalJumpMotion();
 	}
-	
+
 	/**
 	 * This is the part that makes SafeWalk work.
 	 */
@@ -240,7 +240,7 @@ public class ClientPlayerEntityMixin extends AbstractClientPlayerEntity
 		return super.clipAtLedge()
 			|| PFPSClient.INSTANCE.getHax().safeWalkHack.isEnabled();
 	}
-	
+
 	/**
 	 * This mixin allows SafeWalk to sneak visibly when the player is
 	 * near a ledge.
@@ -249,30 +249,27 @@ public class ClientPlayerEntityMixin extends AbstractClientPlayerEntity
 	protected Vec3d adjustMovementForSneaking(Vec3d movement, MovementType type)
 	{
 		Vec3d result = super.adjustMovementForSneaking(movement, type);
-		
+
 		if(movement != null)
 			PFPSClient.INSTANCE.getHax().safeWalkHack
 				.onClipAtLedge(!movement.equals(result));
-		
+
 		return result;
 	}
-	
+
 	@Override
 	public boolean hasStatusEffect(StatusEffect effect)
 	{
 		HackList hax = PFPSClient.INSTANCE.getHax();
-		
+
 		if(effect == StatusEffects.NIGHT_VISION
 			&& hax.fullbrightHack.isNightVisionActive())
 			return true;
-		
-		if(effect == StatusEffects.LEVITATION
-			&& hax.noLevitationHack.isEnabled())
+
+		if((effect == StatusEffects.LEVITATION
+			&& hax.noLevitationHack.isEnabled()) || (effect == StatusEffects.DARKNESS && hax.antiBlindHack.isEnabled()))
 			return false;
-		
-		if(effect == StatusEffects.DARKNESS && hax.antiBlindHack.isEnabled())
-			return false;
-		
+
 		return super.hasStatusEffect(effect);
 	}
 }

@@ -16,18 +16,18 @@ public final class FilterPlayersSetting extends EntityFilterCheckbox
 	{
 		super("Filter players", description, checked);
 	}
-	
+
 	@Override
 	public boolean test(Entity e)
 	{
 		return !(e instanceof PlayerEntity);
 	}
-	
+
 	public static FilterPlayersSetting genericCombat(boolean checked)
 	{
 		return new FilterPlayersSetting("Won't attack other players.", checked);
 	}
-	
+
 	public static FilterPlayersSetting genericVision(boolean checked)
 	{
 		return new FilterPlayersSetting("Won't show other players.", checked);

@@ -39,11 +39,11 @@ public abstract class BlockMixin implements ItemConvertible
 	{
 		ShouldDrawSideEvent event = new ShouldDrawSideEvent(state, pos);
 		EventManager.fire(event);
-		
+
 		if(event.isRendered() != null)
 			cir.setReturnValue(event.isRendered());
 	}
-	
+
 	@Inject(at = @At("HEAD"),
 		method = "getVelocityMultiplier()F",
 		cancellable = true)
@@ -52,7 +52,7 @@ public abstract class BlockMixin implements ItemConvertible
 		HackList hax = PFPSClient.INSTANCE.getHax();
 		if(hax == null || !hax.noSlowdownHack.isEnabled())
 			return;
-		
+
 		if(cir.getReturnValueF() < 1)
 			cir.setReturnValue(1F);
 	}

@@ -16,7 +16,7 @@ import java.util.ArrayList;
 public enum StreamUtils
 {
 	;
-	
+
 	public static ArrayList<String> readAllLines(InputStream input)
 		throws IOException
 	{
@@ -25,10 +25,10 @@ public enum StreamUtils
 		{
 			ArrayList<String> lines = new ArrayList<>();
 			String line;
-			
+
 			while((line = br.readLine()) != null)
 				lines.add(line);
-			
+
 			return lines;
 		}
 	}

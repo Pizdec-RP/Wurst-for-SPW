@@ -29,37 +29,34 @@ public abstract class TitleScreenMixin extends Screen
 {
 	private ClickableWidget realmsButton = null;
 	private ButtonWidget altsButton;
-	
+
 	private TitleScreenMixin(PFPSClient wurst, Text title)
 	{
 		super(title);
 	}
-	
+
 	@Inject(at = @At("RETURN"), method = "init()V")
 	private void onInitWidgetsNormal(CallbackInfo ci)
 	{
 		if(!PFPSClient.INSTANCE.isEnabled())
 			return;
-		
+
 		for(Drawable d : Screens.getButtons(this))
 		{
-			if(!(d instanceof ClickableWidget button))
-				continue;
-			
-			if(!button.getMessage().getString()
+			if(!(d instanceof ClickableWidget button) || !button.getMessage().getString()
 				.equals(I18n.translate("menu.online")))
 				continue;
-			
+
 			realmsButton = button;
 			break;
 		}
-		
+
 		if(realmsButton == null)
 			throw new IllegalStateException("Couldn't find realms button!");
-		
+
 		// make Realms button smaller
 		realmsButton.setWidth(98);
-		
+
 		// add AltManager button
 		addDrawableChild(altsButton = ButtonWidget
 			.builder(Text.literal("Alt Manager"),
@@ -67,18 +64,18 @@ public abstract class TitleScreenMixin extends Screen
 					PFPSClient.INSTANCE.getAltManager())))
 			.dimensions(width / 2 + 2, realmsButton.getY(), 98, 20).build());
 	}
-	
+
 	@Inject(at = @At("RETURN"), method = "tick()V")
 	private void onTick(CallbackInfo ci)
 	{
 		if(realmsButton == null || altsButton == null)
 			return;
-			
+
 		// adjust AltManager button if Realms button has been moved
 		// happens when ModMenu is installed
 		altsButton.setY(realmsButton.getY());
 	}
-	
+
 	/**
 	 * Stops the multiplayer button being grayed out if the user's Microsoft
 	 * account is parental-control'd or banned from online play.

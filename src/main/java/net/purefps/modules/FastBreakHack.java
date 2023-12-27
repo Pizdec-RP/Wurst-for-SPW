@@ -34,7 +34,7 @@ public final class FastBreakHack extends Hack
 			+ " which makes it harder for anti-cheat plugins to detect.\n\n"
 			+ "This setting does nothing if Legit mode is enabled.",
 		1, 0, 1, 0.01, ValueDisplay.PERCENTAGE);
-	
+
 	private final CheckboxSetting legitMode = new CheckboxSetting("Legit mode",
 		"Only removes the delay between breaking blocks, without speeding up"
 			+ " the breaking process itself.\n\n"
@@ -42,11 +42,11 @@ public final class FastBreakHack extends Hack
 			+ " Use this if regular FastBreak is not working and the Activation"
 			+ " chance slider doesn't help.",
 		false);
-	
+
 	private final Random random = new Random();
 	private BlockPos lastBlockPos;
 	private boolean fastBreakBlock;
-	
+
 	public FastBreakHack()
 	{
 		super("FastBreak");
@@ -54,7 +54,7 @@ public final class FastBreakHack extends Hack
 		addSetting(activationChance);
 		addSetting(legitMode);
 	}
-	
+
 	@Override
 	public String getRenderName()
 	{
@@ -62,14 +62,14 @@ public final class FastBreakHack extends Hack
 			return getName() + "Legit";
 		return getName();
 	}
-	
+
 	@Override
 	protected void onEnable()
 	{
 		EVENTS.add(UpdateListener.class, this);
 		EVENTS.add(BlockBreakingProgressListener.class, this);
 	}
-	
+
 	@Override
 	protected void onDisable()
 	{
@@ -77,32 +77,29 @@ public final class FastBreakHack extends Hack
 		EVENTS.remove(BlockBreakingProgressListener.class, this);
 		lastBlockPos = null;
 	}
-	
+
 	@Override
 	public void onUpdate()
 	{
 		MC.interactionManager.blockBreakingCooldown = 0;
 	}
-	
+
 	@Override
 	public void onBlockBreakingProgress(BlockBreakingProgressEvent event)
 	{
-		if(legitMode.isChecked())
+		if(legitMode.isChecked() || (MC.interactionManager.currentBreakingProgress >= 1))
 			return;
-		
-		if(MC.interactionManager.currentBreakingProgress >= 1)
-			return;
-		
+
 		BlockPos blockPos = event.getBlockPos();
 		if(!blockPos.equals(lastBlockPos))
 		{
 			lastBlockPos = blockPos;
 			fastBreakBlock = random.nextDouble() <= activationChance.getValue();
 		}
-		
+
 		if(!fastBreakBlock)
 			return;
-		
+
 		Action action = PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK;
 		Direction direction = event.getDirection();
 		IMC.getInteractionManager().sendPlayerActionC2SPacket(action, blockPos,

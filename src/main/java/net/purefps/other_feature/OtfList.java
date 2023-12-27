@@ -13,7 +13,22 @@ import java.util.TreeMap;
 
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
-import net.purefps.other_features.*;
+import net.purefps.other_features.CleanUpOtf;
+import net.purefps.other_features.DisableOtf;
+import net.purefps.other_features.HackListOtf;
+import net.purefps.other_features.KeybindManagerOtf;
+import net.purefps.other_features.LastServerOtf;
+import net.purefps.other_features.NoChatReportsOtf;
+import net.purefps.other_features.NoTelemetryOtf;
+import net.purefps.other_features.ReconnectOtf;
+import net.purefps.other_features.ServerFinderOtf;
+import net.purefps.other_features.TabGuiOtf;
+import net.purefps.other_features.TranslationsOtf;
+import net.purefps.other_features.VanillaSpoofOtf;
+import net.purefps.other_features.WikiDataExportOtf;
+import net.purefps.other_features.WurstCapesOtf;
+import net.purefps.other_features.WurstLogoOtf;
+import net.purefps.other_features.ZoomOtf;
 
 public final class OtfList
 {
@@ -33,10 +48,10 @@ public final class OtfList
 	public final WurstCapesOtf wurstCapesOtf = new WurstCapesOtf();
 	public final WurstLogoOtf wurstLogoOtf = new WurstLogoOtf();
 	public final ZoomOtf zoomOtf = new ZoomOtf();
-	
+
 	private final TreeMap<String, OtherFeature> otfs =
 		new TreeMap<>(String::compareToIgnoreCase);
-	
+
 	public OtfList()
 	{
 		try
@@ -45,11 +60,11 @@ public final class OtfList
 			{
 				if(!field.getName().endsWith("Otf"))
 					continue;
-				
+
 				OtherFeature otf = (OtherFeature)field.get(this);
 				otfs.put(otf.getName(), otf);
 			}
-			
+
 		}catch(Exception e)
 		{
 			String message = "Initializing other Wurst features";
@@ -57,17 +72,17 @@ public final class OtfList
 			throw new CrashException(report);
 		}
 	}
-	
+
 	public OtherFeature getOtfByName(String name)
 	{
 		return otfs.get(name);
 	}
-	
+
 	public Collection<OtherFeature> getAllOtfs()
 	{
 		return otfs.values();
 	}
-	
+
 	public int countOtfs()
 	{
 		return otfs.size();

@@ -46,7 +46,7 @@ public abstract class ClientPlayerInteractionManagerMixin
 	@Shadow
 	@Final
 	private MinecraftClient client;
-	
+
 	@Inject(at = @At(value = "INVOKE",
 		target = "Lnet/minecraft/client/network/ClientPlayerEntity;getId()I",
 		ordinal = 0),
@@ -56,7 +56,7 @@ public abstract class ClientPlayerInteractionManagerMixin
 	{
 		EventManager.fire(new BlockBreakingProgressEvent(pos, direction));
 	}
-	
+
 	@Inject(at = @At("HEAD"),
 		method = "getReachDistance()F",
 		cancellable = true)
@@ -65,12 +65,12 @@ public abstract class ClientPlayerInteractionManagerMixin
 		HackList hax = PFPSClient.INSTANCE.getHax();
 		if(hax == null)
 			return;
-		
+
 		ReachHack reach = hax.reachHack;
 		if(reach.isEnabled())
 			ci.setReturnValue(reach.getReachDistance());
 	}
-	
+
 	@Inject(at = @At("HEAD"),
 		method = "hasExtendedReach()Z",
 		cancellable = true)
@@ -79,47 +79,47 @@ public abstract class ClientPlayerInteractionManagerMixin
 		HackList hax = PFPSClient.INSTANCE.getHax();
 		if(hax == null || !hax.reachHack.isEnabled())
 			return;
-		
+
 		cir.setReturnValue(true);
 	}
-	
+
 	@Inject(at = @At("HEAD"),
 		method = "stopUsingItem(Lnet/minecraft/entity/player/PlayerEntity;)V")
 	private void onStopUsingItem(PlayerEntity player, CallbackInfo ci)
 	{
 		EventManager.fire(StopUsingItemEvent.INSTANCE);
 	}
-	
+
 	@Override
 	public void windowClick_PICKUP(int slot)
 	{
 		clickSlot(0, slot, 0, SlotActionType.PICKUP, client.player);
 	}
-	
+
 	@Override
 	public void windowClick_QUICK_MOVE(int slot)
 	{
 		clickSlot(0, slot, 0, SlotActionType.QUICK_MOVE, client.player);
 	}
-	
+
 	@Override
 	public void windowClick_THROW(int slot)
 	{
 		clickSlot(0, slot, 1, SlotActionType.THROW, client.player);
 	}
-	
+
 	@Override
 	public void windowClick_SWAP(int from, int to)
 	{
 		clickSlot(0, from, to, SlotActionType.SWAP, client.player);
 	}
-	
+
 	@Override
 	public void rightClickItem()
 	{
 		interactItem(client.player, Hand.MAIN_HAND);
 	}
-	
+
 	@Override
 	public void rightClickBlock(BlockPos pos, Direction side, Vec3d hitVec)
 	{
@@ -128,7 +128,7 @@ public abstract class ClientPlayerInteractionManagerMixin
 		interactBlock(client.player, hand, hitResult);
 		interactItem(client.player, hand);
 	}
-	
+
 	@Override
 	public void sendPlayerActionC2SPacket(Action action, BlockPos blockPos,
 		Direction direction)
@@ -136,7 +136,7 @@ public abstract class ClientPlayerInteractionManagerMixin
 		sendSequencedPacket(client.world,
 			i -> new PlayerActionC2SPacket(action, blockPos, direction, i));
 	}
-	
+
 	@Override
 	public void sendPlayerInteractBlockPacket(Hand hand,
 		BlockHitResult blockHitResult)
@@ -144,21 +144,21 @@ public abstract class ClientPlayerInteractionManagerMixin
 		sendSequencedPacket(client.world,
 			i -> new PlayerInteractBlockC2SPacket(hand, blockHitResult, i));
 	}
-	
+
 	@Shadow
 	private void sendSequencedPacket(ClientWorld world,
 		SequencedPacketCreator packetCreator)
 	{
-		
+
 	}
-	
+
 	@Shadow
 	public abstract ActionResult interactBlock(ClientPlayerEntity player,
 		Hand hand, BlockHitResult hitResult);
-	
+
 	@Shadow
 	public abstract ActionResult interactItem(PlayerEntity player, Hand hand);
-	
+
 	@Shadow
 	public abstract void clickSlot(int syncId, int slotId, int button,
 		SlotActionType actionType, PlayerEntity player);

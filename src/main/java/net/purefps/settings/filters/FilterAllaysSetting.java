@@ -16,18 +16,18 @@ public final class FilterAllaysSetting extends EntityFilterCheckbox
 	{
 		super("Filter allays", description, checked);
 	}
-	
+
 	@Override
 	public boolean test(Entity e)
 	{
 		return !(e instanceof AllayEntity);
 	}
-	
+
 	public static FilterAllaysSetting genericCombat(boolean checked)
 	{
 		return new FilterAllaysSetting("Won't attack allays.", checked);
 	}
-	
+
 	public static FilterAllaysSetting genericVision(boolean checked)
 	{
 		return new FilterAllaysSetting("Won't show allays.", checked);

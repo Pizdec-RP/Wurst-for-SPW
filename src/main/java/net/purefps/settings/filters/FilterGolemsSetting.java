@@ -17,19 +17,19 @@ public final class FilterGolemsSetting extends EntityFilterCheckbox
 	{
 		super("Filter golems", description, checked);
 	}
-	
+
 	@Override
 	public boolean test(Entity e)
 	{
 		return !(e instanceof GolemEntity) || e instanceof ShulkerEntity;
 	}
-	
+
 	public static FilterGolemsSetting genericCombat(boolean checked)
 	{
 		return new FilterGolemsSetting(
 			"Won't attack iron golems and snow golems.", checked);
 	}
-	
+
 	public static FilterGolemsSetting genericVision(boolean checked)
 	{
 		return new FilterGolemsSetting(

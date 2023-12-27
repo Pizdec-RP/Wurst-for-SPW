@@ -29,11 +29,11 @@ public class AllowedAddressResolverMixin
 	@Shadow
 	@Final
 	private AddressResolver addressResolver;
-	
+
 	@Shadow
 	@Final
 	private RedirectResolver redirectResolver;
-	
+
 	/**
 	 * This mixin allows users to connect to servers that have been shadowbanned
 	 * by Mojang, such as CS:GO and GTA clones that are apparently "too
@@ -47,14 +47,14 @@ public class AllowedAddressResolverMixin
 	{
 		if(!PFPSClient.INSTANCE.isEnabled())
 			return;
-		
+
 		Optional<Address> optionalAddress = addressResolver.resolve(address);
 		Optional<ServerAddress> optionalRedirect =
 			redirectResolver.lookupRedirect(address);
-		
+
 		if(optionalRedirect.isPresent())
 			optionalAddress = addressResolver.resolve(optionalRedirect.get());
-		
+
 		cir.setReturnValue(optionalAddress);
 	}
 }

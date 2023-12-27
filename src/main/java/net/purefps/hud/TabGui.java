@@ -38,35 +38,35 @@ public final class TabGui implements KeyPressListener
 	private final ArrayList<Tab> tabs = new ArrayList<>();
 	private final TabGuiOtf tabGuiOtf =
 		PFPSClient.INSTANCE.getOtfs().tabGuiOtf;
-	
+
 	private int width;
 	private int height;
 	private int selected;
 	private boolean tabOpened;
-	
+
 	public TabGui()
 	{
 		PFPSClient.INSTANCE.getEventManager().add(KeyPressListener.class,
 			this);
-		
+
 		LinkedHashMap<Category, Tab> tabMap = new LinkedHashMap<>();
 		for(Category category : Category.values())
 			tabMap.put(category, new Tab(category.getName()));
-		
+
 		ArrayList<Feature> features = new ArrayList<>();
 		features.addAll(PFPSClient.INSTANCE.getHax().getAllHax());
 		features.addAll(PFPSClient.INSTANCE.getCmds().getAllCmds());
 		features.addAll(PFPSClient.INSTANCE.getOtfs().getAllOtfs());
-		
+
 		for(Feature feature : features)
 			if(feature.getCategory() != null)
 				tabMap.get(feature.getCategory()).add(feature);
-			
+
 		tabs.addAll(tabMap.values());
 		tabs.forEach(Tab::updateSize);
 		updateSize();
 	}
-	
+
 	private void updateSize()
 	{
 		width = 64;
@@ -78,23 +78,20 @@ public final class TabGui implements KeyPressListener
 		}
 		height = tabs.size() * 10;
 	}
-	
+
 	@Override
 	public void onKeyPress(KeyPressEvent event)
 	{
-		if(event.getAction() != GLFW.GLFW_PRESS)
+		if((event.getAction() != GLFW.GLFW_PRESS) || tabGuiOtf.isHidden())
 			return;
-		
-		if(tabGuiOtf.isHidden())
-			return;
-		
+
 		if(tabOpened)
 			switch(event.getKeyCode())
 			{
 				case GLFW.GLFW_KEY_LEFT:
 				tabOpened = false;
 				break;
-				
+
 				default:
 				tabs.get(selected).onKeyPress(event.getKeyCode());
 				break;
@@ -108,105 +105,105 @@ public final class TabGui implements KeyPressListener
 				else
 					selected = 0;
 				break;
-				
+
 				case GLFW.GLFW_KEY_UP:
 				if(selected > 0)
 					selected--;
 				else
 					selected = tabs.size() - 1;
 				break;
-				
+
 				case GLFW.GLFW_KEY_RIGHT:
 				tabOpened = true;
 				break;
 			}
 	}
-	
+
 	public void render(DrawContext context, float partialTicks)
 	{
 		MatrixStack matrixStack = context.getMatrices();
 		if(tabGuiOtf.isHidden())
 			return;
-		
+
 		ClickGui gui = PFPSClient.INSTANCE.getGui();
 		int txtColor = gui.getTxtColor();
-		
+
 		GL11.glDisable(GL11.GL_CULL_FACE);
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		
+
 		matrixStack.push();
 		Window sr = PFPSClient.MC.getWindow();
-		
+
 		int x = 2;
 		int y = 23;
-		
+
 		matrixStack.translate(x, y, 0);
 		drawBox(matrixStack, 0, 0, width, height);
-		
+
 		double factor = sr.getScaleFactor();
 		GL11.glScissor((int)(x * factor),
 			(int)((sr.getScaledHeight() - height - y) * factor),
 			(int)(width * factor), (int)(height * factor));
 		GL11.glEnable(GL11.GL_SCISSOR_TEST);
-		
+
 		int textY = 1;
-		
+
 		for(int i = 0; i < tabs.size(); i++)
 		{
 			String tabName = tabs.get(i).name;
 			if(i == selected)
 				tabName = (tabOpened ? "<" : ">") + tabName;
-			
+
 			context.drawText(PFPSClient.MC.textRenderer, tabName, 2, textY,
 				txtColor, false);
 			textY += 10;
 		}
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glDisable(GL11.GL_SCISSOR_TEST);
-		
+
 		if(tabOpened)
 		{
 			matrixStack.push();
-			
+
 			Tab tab = tabs.get(selected);
 			int tabX = x + width + 2;
 			int tabY = y;
-			
+
 			matrixStack.translate(width + 2, 0, 0);
 			drawBox(matrixStack, 0, 0, tab.width, tab.height);
-			
+
 			GL11.glScissor((int)(tabX * factor),
 				(int)((sr.getScaledHeight() - tab.height - tabY) * factor),
 				(int)(tab.width * factor), (int)(tab.height * factor));
 			GL11.glEnable(GL11.GL_SCISSOR_TEST);
-			
+
 			int tabTextY = 1;
 			for(int i = 0; i < tab.features.size(); i++)
 			{
 				Feature feature = tab.features.get(i);
 				String fName = feature.getName();
-				
+
 				if(feature.isEnabled())
 					fName = "\u00a7a" + fName + "\u00a7r";
-				
+
 				if(i == tab.selected)
 					fName = ">" + fName;
-				
+
 				context.drawText(PFPSClient.MC.textRenderer, fName, 2,
 					tabTextY, txtColor, false);
 				tabTextY += 10;
 			}
 			GL11.glEnable(GL11.GL_BLEND);
 			GL11.glDisable(GL11.GL_SCISSOR_TEST);
-			
+
 			matrixStack.pop();
 		}
-		
+
 		matrixStack.pop();
 		GL11.glEnable(GL11.GL_CULL_FACE);
 	}
-	
+
 	private void drawBox(MatrixStack matrixStack, int x1, int y1, int x2,
 		int y2)
 	{
@@ -214,16 +211,16 @@ public final class TabGui implements KeyPressListener
 		float[] bgColor = gui.getBgColor();
 		float[] acColor = gui.getAcColor();
 		float opacity = gui.getOpacity();
-		
+
 		Matrix4f matrix = matrixStack.peek().getPositionMatrix();
 		Tessellator tessellator = RenderSystem.renderThreadTesselator();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		RenderSystem.setShader(GameRenderer::getPositionProgram);
-		
+
 		// color
 		RenderSystem.setShaderColor(bgColor[0], bgColor[1], bgColor[2],
 			opacity);
-		
+
 		// box
 		bufferBuilder.begin(VertexFormat.DrawMode.QUADS,
 			VertexFormats.POSITION);
@@ -234,13 +231,13 @@ public final class TabGui implements KeyPressListener
 			bufferBuilder.vertex(matrix, x1, y2, 0).next();
 		}
 		tessellator.draw();
-		
+
 		// outline positions
 		float xi1 = x1 - 0.1F;
 		float xi2 = x2 + 0.1F;
 		float yi1 = y1 - 0.1F;
 		float yi2 = y2 + 0.1F;
-		
+
 		// outline
 		GL11.glLineWidth(1);
 		RenderSystem.setShaderColor(acColor[0], acColor[1], acColor[2], 0.5F);
@@ -254,20 +251,20 @@ public final class TabGui implements KeyPressListener
 			bufferBuilder.vertex(matrix, xi1, yi1, 0).next();
 		}
 		tessellator.draw();
-		
+
 		// shadow positions
 		xi1 -= 0.9;
 		xi2 += 0.9;
 		yi1 -= 0.9;
 		yi2 += 0.9;
-		
+
 		RenderSystem.setShader(GameRenderer::getPositionColorProgram);
 		RenderSystem.setShaderColor(1, 1, 1, 1);
-		
+
 		// top left
 		bufferBuilder.begin(VertexFormat.DrawMode.QUADS,
 			VertexFormats.POSITION_COLOR);
-		
+
 		// top
 		bufferBuilder.vertex(matrix, x1, y1, 0)
 			.color(acColor[0], acColor[1], acColor[2], 0.75F).next();
@@ -275,7 +272,7 @@ public final class TabGui implements KeyPressListener
 			.color(acColor[0], acColor[1], acColor[2], 0.75F).next();
 		bufferBuilder.vertex(matrix, xi2, yi1, 0).color(0, 0, 0, 0).next();
 		bufferBuilder.vertex(matrix, xi1, yi1, 0).color(0, 0, 0, 0).next();
-		
+
 		// left
 		bufferBuilder.vertex(matrix, xi1, yi1, 0).color(0, 0, 0, 0).next();
 		bufferBuilder.vertex(matrix, xi1, yi2, 0).color(0, 0, 0, 0).next();
@@ -283,7 +280,7 @@ public final class TabGui implements KeyPressListener
 			.color(acColor[0], acColor[1], acColor[2], 0.75F).next();
 		bufferBuilder.vertex(matrix, x1, y1, 0)
 			.color(acColor[0], acColor[1], acColor[2], 0.75F).next();
-		
+
 		// right
 		bufferBuilder.vertex(matrix, x2, y2, 0)
 			.color(acColor[0], acColor[1], acColor[2], 0.75F).next();
@@ -291,7 +288,7 @@ public final class TabGui implements KeyPressListener
 			.color(acColor[0], acColor[1], acColor[2], 0.75F).next();
 		bufferBuilder.vertex(matrix, xi2, yi1, 0).color(0, 0, 0, 0).next();
 		bufferBuilder.vertex(matrix, xi2, yi2, 0).color(0, 0, 0, 0).next();
-		
+
 		// bottom
 		bufferBuilder.vertex(matrix, xi2, yi2, 0).color(0, 0, 0, 0).next();
 		bufferBuilder.vertex(matrix, xi1, yi2, 0).color(0, 0, 0, 0).next();
@@ -299,24 +296,24 @@ public final class TabGui implements KeyPressListener
 			.color(acColor[0], acColor[1], acColor[2], 0.75F).next();
 		bufferBuilder.vertex(matrix, x2, y2, 0)
 			.color(acColor[0], acColor[1], acColor[2], 0.75F).next();
-		
+
 		tessellator.draw();
 	}
-	
+
 	private static final class Tab
 	{
 		private final String name;
 		private final ArrayList<Feature> features = new ArrayList<>();
-		
+
 		private int width;
 		private int height;
 		private int selected;
-		
+
 		public Tab(String name)
 		{
 			this.name = name;
 		}
-		
+
 		public void updateSize()
 		{
 			width = 64;
@@ -330,7 +327,7 @@ public final class TabGui implements KeyPressListener
 			}
 			height = features.size() * 10;
 		}
-		
+
 		public void onKeyPress(int keyCode)
 		{
 			switch(keyCode)
@@ -341,24 +338,24 @@ public final class TabGui implements KeyPressListener
 				else
 					selected = 0;
 				break;
-				
+
 				case GLFW.GLFW_KEY_UP:
 				if(selected > 0)
 					selected--;
 				else
 					selected = features.size() - 1;
 				break;
-				
+
 				case GLFW.GLFW_KEY_ENTER:
 				onEnter();
 				break;
 			}
 		}
-		
+
 		private void onEnter()
 		{
 			Feature feature = features.get(selected);
-			
+
 			TooManyHaxHack tooManyHax =
 				PFPSClient.INSTANCE.getHax().tooManyHaxHack;
 			if(tooManyHax.isEnabled() && tooManyHax.isBlocked(feature))
@@ -367,10 +364,10 @@ public final class TabGui implements KeyPressListener
 					.error(feature.getName() + " is blocked by TooManyHax.");
 				return;
 			}
-			
+
 			feature.doPrimaryAction();
 		}
-		
+
 		public void add(Feature feature)
 		{
 			features.add(feature);
